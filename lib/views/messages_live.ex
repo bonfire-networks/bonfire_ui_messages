@@ -187,8 +187,7 @@ defmodule Bonfire.UI.Messages.MessagesLive do
         %{
           participants: participants,
           title: title
-        } =
-          LiveHandler.thread_meta(thread_id, activity, message, current_user: current_user)
+        } = LiveHandler.thread_meta(thread_id, activity, message, current_user: current_user)
 
         {
           :noreply,
