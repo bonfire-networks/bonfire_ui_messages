@@ -3,17 +3,17 @@
   widget_title={e(@widget_title, "Messages")}
 >
   <:action>
-    <LiveRedirect
+    <LinkLive
       class="text-xs normal-case btn btn-xs btn-outline"
       to={path(Bonfire.Data.Social.Message)}
     >
       {l("View more")}
-    </LiveRedirect>
+    </LinkLive>
   </:action>
 
   <ul class="divide-y menu bg-base-100 divide-base-300">
     <li :for={%{activity: activity} <- @feed}>
-      <LiveRedirect to={path(Bonfire.Data.Social.Message, e(activity, :object_id, nil))} class="block">
+      <LinkLive to={path(Bonfire.Data.Social.Message, e(activity, :object_id, nil))} class="block">
         <div class="flex items-center">
           <div class="flex-1 min-w-0 sm:flex sm:items-center sm:justify-between">
             <div class="truncate">
@@ -30,7 +30,7 @@
             </div>
           </div>
         </div>
-      </LiveRedirect>
+      </LinkLive>
     </li>
   </ul>
 </Bonfire.UI.Common.WidgetBlockLive>
