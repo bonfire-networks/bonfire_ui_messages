@@ -58,7 +58,7 @@ defmodule Bonfire.UI.Messages.MessagesLive do
     }
   end
 
-  def do_handle_params(%{"username" => username} = _params, _url, socket) do
+  def handle_params(%{"username" => username} = _params, _url, socket) do
     # view messages excanged with a particular user
 
     current_user = current_user_required!(socket)
@@ -121,7 +121,7 @@ defmodule Bonfire.UI.Messages.MessagesLive do
     end
   end
 
-  # def do_handle_params(%{"id" => "compose" = id} = params, url, socket) do
+  # def handle_params(%{"id" => "compose" = id} = params, url, socket) do
   #   current_user = current_user_required!(socket)
   #   users = Bonfire.Social.Graph.Follows.list_my_followed(current_user, paginate: false)
 
@@ -143,9 +143,9 @@ defmodule Bonfire.UI.Messages.MessagesLive do
   #    )}
   # end
 
-  def do_handle_params(%{"id" => id} = _params, url, socket) do
+  def handle_params(%{"id" => id} = _params, url, socket) do
     if not is_ulid?(id) do
-      do_handle_params(%{"username" => id}, url, socket)
+      handle_params(%{"username" => id}, url, socket)
     else
       # show a message thread
 
@@ -236,7 +236,7 @@ defmodule Bonfire.UI.Messages.MessagesLive do
   end
 
   # show all my threads
-  def do_handle_params(_params, _url, socket) do
+  def handle_params(_params, _url, socket) do
     current_user = current_user_required!(socket)
 
     threads = e(socket.assigns, :threads, nil) || LiveHandler.list_threads(current_user, socket)
@@ -254,7 +254,7 @@ defmodule Bonfire.UI.Messages.MessagesLive do
     }
   end
 
-  def do_handle_event("remove", %{data: %{"field" => field, "id" => id}}, socket) do
+  def handle_event("remove", %{data: %{"field" => field, "id" => id}}, socket) do
     {:noreply,
      socket
      |> update(maybe_to_atom(field) |> debug("f"), fn current_to_circles ->
@@ -262,31 +262,4 @@ defmodule Bonfire.UI.Messages.MessagesLive do
        |> debug("v")
      end)}
   end
-
-  def handle_params(params, uri, socket),
-    do:
-      Bonfire.UI.Common.LiveHandlers.handle_params(
-        params,
-        uri,
-        socket,
-        __MODULE__,
-        &do_handle_params/3
-      )
-
-  def handle_info(info, socket),
-    do: Bonfire.UI.Common.LiveHandlers.handle_info(info, socket, __MODULE__)
-
-  def handle_event(
-        action,
-        attrs,
-        socket
-      ),
-      do:
-        Bonfire.UI.Common.LiveHandlers.handle_event(
-          action,
-          attrs,
-          socket,
-          __MODULE__
-          # &do_handle_event/3
-        )
 end
