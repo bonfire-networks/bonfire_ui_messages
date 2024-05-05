@@ -1,7 +1,7 @@
 defmodule Bonfire.UI.Messages.MessagesLive do
   use Bonfire.UI.Common.Web, :surface_live_view
 
-  # alias Bonfire.Social.Integration
+  # alias Bonfire.Social
   alias Bonfire.Messages.LiveHandler
   import Untangle
 
