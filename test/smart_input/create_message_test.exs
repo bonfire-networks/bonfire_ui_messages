@@ -164,7 +164,7 @@ defmodule Bonfire.UI.Messages.CreatePost.Test do
                |> element("[data-id=action_reply]")
                |> render_click()
 
-      open_browser(view)
+      # open_browser(view)
 
       assert view
              |> form("#smart_input form")
