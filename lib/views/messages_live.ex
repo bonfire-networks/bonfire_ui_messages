@@ -32,6 +32,7 @@ defmodule Bonfire.UI.Messages.MessagesLive do
       |> assign(
         nav_items: Bonfire.Common.ExtensionModule.default_nav(),
         showing_within: :messages,
+        back: true,
         #  smart_input_opts: %{prompt: l("Message"), icon: "mdi:inbox"},
         #  smart_input_opts: [inline_only: true],
         # to_boundaries: [{"message", "Message"}],
