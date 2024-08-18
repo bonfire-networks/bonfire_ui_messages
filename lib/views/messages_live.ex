@@ -43,6 +43,8 @@ defmodule Bonfire.UI.Messages.MessagesLive do
         feed_id: feed_id,
         activity: nil,
         object: nil,
+        tab_id: nil,
+        threads: [],
         #  reply_to_id: nil,
         #  thread_id: nil,
         thread_mode: maybe_to_atom(e(params, "mode", nil)) || :flat,
