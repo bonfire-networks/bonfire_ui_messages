@@ -142,7 +142,8 @@ defmodule Bonfire.Messages.LiveHandler do
       |> Map.put(:to_circles, params["to_circles"])
       |> debug
 
-    with {:ok, sent} <- Messages.send(current_user_required!(socket), attrs) do
+    with {:ok, sent} <-
+           Messages.send([context: socket.assigns[:__context__] || current_user(socket)], attrs) do
       # debug(sent, "sent!")
       message_sent(sent, attrs, socket)
       # else e ->
