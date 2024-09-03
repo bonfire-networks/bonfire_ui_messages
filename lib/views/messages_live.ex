@@ -117,7 +117,7 @@ defmodule Bonfire.UI.Messages.MessagesLive do
          #  smart_input_opts: [prompt: l("Compose a thoughtful message...")],
          #  to_circles: to_circles || []
          #  sidebar_widgets:
-         #    LiveHandler.threads_widget(current_user, ulid(e(socket.assigns, :user, nil)),
+         #    LiveHandler.threads_widget(current_user, uid(e(socket.assigns, :user, nil)),
          #      thread_id: nil,
          #      tab_id: "compose"
          #    )
@@ -145,7 +145,7 @@ defmodule Bonfire.UI.Messages.MessagesLive do
   #      thread_id: nil,
   #      to_circles: []
   #      #  sidebar_widgets:
-  #      #    LiveHandler.threads_widget(current_user, ulid(e(socket.assigns, :user, nil)),
+  #      #    LiveHandler.threads_widget(current_user, uid(e(socket.assigns, :user, nil)),
   #      #      thread_id: nil,
   #      #      tab_id: "select_recipients"
   #      #    )
@@ -153,7 +153,7 @@ defmodule Bonfire.UI.Messages.MessagesLive do
   # end
 
   def handle_params(%{"id" => id} = _params, url, socket) do
-    if not is_ulid?(id) do
+    if not is_uid?(id) do
       handle_params(%{"username" => id}, url, socket)
     else
       # show a message thread
@@ -230,7 +230,7 @@ defmodule Bonfire.UI.Messages.MessagesLive do
               ]
             ]
             # sidebar_widgets:
-            #   LiveHandler.threads_widget(current_user, ulid(e(socket.assigns, :user, nil)),
+            #   LiveHandler.threads_widget(current_user, uid(e(socket.assigns, :user, nil)),
             #     thread_id: e(message, :id, nil),
             #     tab_id: "thread"
             #   )

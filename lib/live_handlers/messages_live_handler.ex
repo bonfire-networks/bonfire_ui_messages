@@ -60,7 +60,7 @@ defmodule Bonfire.Messages.LiveHandler do
         main: [
           {Bonfire.UI.Messages.MessageThreadsLive,
            [
-             context: ulid(user),
+             context: uid(user),
              showing_within: :messages,
              threads: list_threads(current_user, user, opts),
              thread_id: opts[:thread_id]
@@ -169,7 +169,7 @@ defmodule Bonfire.Messages.LiveHandler do
       :noreply,
       socket
       |> assign_flash(:info, l("Sent!"))
-      #  |> redirect_to("/messages/#{e(sent, :replied, :thread_id, nil) || ulid(sent)}##{ulid(sent)}")
+      #  |> redirect_to("/messages/#{e(sent, :replied, :thread_id, nil) || uid(sent)}##{uid(sent)}")
     }
   end
 end

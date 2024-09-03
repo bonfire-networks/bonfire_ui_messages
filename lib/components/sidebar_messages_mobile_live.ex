@@ -8,13 +8,13 @@ defmodule Bonfire.UI.Messages.SidebarMessagesMobileLive do
   def permalink(thread, object) do
     thread_url =
       if thread do
-        "/messages/#{ulid(thread)}"
+        "/messages/#{uid(thread)}"
       end
 
-    if thread_url && ulid(thread) != ulid(object) do
-      "#{thread_url}##{ulid(object)}"
+    if thread_url && uid(thread) != uid(object) do
+      "#{thread_url}##{uid(object)}"
     else
-      "/messages/#{ulid(object)}"
+      "/messages/#{uid(object)}"
     end
   end
 end
