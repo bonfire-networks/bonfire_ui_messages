@@ -20,9 +20,9 @@ defmodule Bonfire.Messages.LiveHandler do
 
   def handle_event("select_recipient", %{"id" => id, "action" => "deselect"}, socket) do
     debug(id, "remove from circles")
-    # debug(e(socket.assigns, :to_circles, []))
+    # debug(e(assigns(socket), :to_circles, []))
     to_circles =
-      Enum.reject(e(socket.assigns, :to_circles, []), fn {_name, cid} -> cid == id end)
+      Enum.reject(e(assigns(socket), :to_circles, []), fn {_name, cid} -> cid == id end)
       |> debug()
 
     {:noreply, assign(socket, to_circles: to_circles)}
@@ -30,9 +30,9 @@ defmodule Bonfire.Messages.LiveHandler do
 
   def handle_event("select_recipient", %{"id" => id, "name" => name}, socket) do
     debug(id, "add to circles")
-    # debug(e(socket.assigns, :to_circles, []))
+    # debug(e(assigns(socket), :to_circles, []))
     to_circles =
-      [{name, id} | e(socket.assigns, :to_circles, [])]
+      [{name, id} | e(assigns(socket), :to_circles, [])]
       |> Enum.uniq()
 
     # |> debug()
@@ -47,9 +47,9 @@ defmodule Bonfire.Messages.LiveHandler do
      |> assign(
        sidebar_widgets:
          threads_widget(
-           current_user(socket.assigns),
+           current_user(assigns(socket)),
            context,
-           [tab_id: nil, thread_id: e(socket.assigns, :thread_id, nil)] ++ List.wrap(opts)
+           [tab_id: nil, thread_id: e(assigns(socket), :thread_id, nil)] ++ List.wrap(opts)
          )
      )}
   end
@@ -143,7 +143,7 @@ defmodule Bonfire.Messages.LiveHandler do
       |> debug
 
     with {:ok, sent} <-
-           Messages.send([context: socket.assigns[:__context__] || current_user(socket)], attrs) do
+           Messages.send([context: assigns(socket)[:__context__] || current_user(socket)], attrs) do
       # debug(sent, "sent!")
       message_sent(sent, attrs, socket)
       # else e ->

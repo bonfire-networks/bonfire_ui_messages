@@ -117,7 +117,7 @@ defmodule Bonfire.UI.Messages.MessagesLive do
          #  smart_input_opts: [prompt: l("Compose a thoughtful message...")],
          #  to_circles: to_circles || []
          #  sidebar_widgets:
-         #    LiveHandler.threads_widget(current_user, uid(e(socket.assigns, :user, nil)),
+         #    LiveHandler.threads_widget(current_user, uid(e(assigns(socket), :user, nil)),
          #      thread_id: nil,
          #      tab_id: "compose"
          #    )
@@ -145,7 +145,7 @@ defmodule Bonfire.UI.Messages.MessagesLive do
   #      thread_id: nil,
   #      to_circles: []
   #      #  sidebar_widgets:
-  #      #    LiveHandler.threads_widget(current_user, uid(e(socket.assigns, :user, nil)),
+  #      #    LiveHandler.threads_widget(current_user, uid(e(assigns(socket), :user, nil)),
   #      #      thread_id: nil,
   #      #      tab_id: "select_recipients"
   #      #    )
@@ -224,13 +224,13 @@ defmodule Bonfire.UI.Messages.MessagesLive do
                   #    context: nil,
                   #    tab_id: nil,
                   #    showing_within: :messages,
-                  #    threads: e(socket.assigns, :threads, nil) || LiveHandler.list_threads(current_user, socket)
+                  #    threads: e(assigns(socket), :threads, nil) || LiveHandler.list_threads(current_user, socket)
                   #  ]}
                 ]
               ]
             ]
             # sidebar_widgets:
-            #   LiveHandler.threads_widget(current_user, uid(e(socket.assigns, :user, nil)),
+            #   LiveHandler.threads_widget(current_user, uid(e(assigns(socket), :user, nil)),
             #     thread_id: e(message, :id, nil),
             #     tab_id: "thread"
             #   )
@@ -248,7 +248,7 @@ defmodule Bonfire.UI.Messages.MessagesLive do
   def handle_params(_params, _url, socket) do
     current_user = current_user_required!(socket)
 
-    threads = e(socket.assigns, :threads, nil) || LiveHandler.list_threads(current_user, socket)
+    threads = e(assigns(socket), :threads, nil) || LiveHandler.list_threads(current_user, socket)
 
     {
       :noreply,
