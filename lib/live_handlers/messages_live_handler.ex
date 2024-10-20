@@ -99,7 +99,9 @@ defmodule Bonfire.Messages.LiveHandler do
   end
 
   def thread_meta(thread_id, activity, object, opts) do
-    participants = thread_participants(thread_id, activity, object, opts)
+    participants =
+      thread_participants(thread_id, activity, object, opts)
+      |> debug(thread_id)
 
     # to_circles =
     #   if is_list(participants) and participants !=[],
@@ -124,13 +126,14 @@ defmodule Bonfire.Messages.LiveHandler do
     # prompt = l("Compose a thoughtful response")
 
     # l("Conversation between %{people}", people: names)
-    title = if names && names != [], do: names, else: l("Conversation")
+    title = if names && names != "", do: names, else: l("Note to self")
 
     %{
       participants: participants,
       names: names,
       title: title
     }
+    |> debug(thread_id)
   end
 
   def send_message(params, socket) do

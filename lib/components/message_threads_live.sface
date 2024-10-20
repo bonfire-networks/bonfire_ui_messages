@@ -23,8 +23,7 @@
                 <div class="w-full truncate">
                   <div class="flex items-center justify-between">
                     <div class="flex-1 text-sm font-semibold truncate text-base-content">
-                      <!-- FIXME: do not look this up on render -->
-
+                      {!-- FIXME: do not look this up on render --}
                       {#case {LiveHandler.thread_meta(:title, e(activity, :replied, :thread_id, nil), activity, nil,
                            current_user: current_user(@__context__)
                          ), e(activity, :replied, :thread, :named, :name, nil)}}
@@ -41,7 +40,10 @@
                   </div>
                   <div class="mt-1">
                     <p class="text-sm max-w-[240px] truncate text-base-content/70 font-regular">
-                      <span class="font-medium text-base-content">{e(activity, :subject, :profile, :name, nil)}:
+                      <span class="font-medium text-base-content">
+                        {if e(activity, :subject_id, nil) == current_user_id(@__context__),
+                          do: l("Me"),
+                          else: e(activity, :subject, :profile, :name, nil)}:
                       </span>
                       {Text.text_only(
                         e(activity, :object, :post_content, :name, nil) ||

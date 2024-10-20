@@ -202,7 +202,7 @@ defmodule Bonfire.UI.Messages.MessagesLive do
           :noreply,
           socket
           |> assign(
-            page_title: e(activity, :replied, :thread, :named, :name, title),
+            page_title: e(activity, :replied, :thread, :named, :name, nil) || title,
             page: "messages",
             tab_id: "thread",
             # reply_to_id: reply_to_id,
@@ -248,7 +248,9 @@ defmodule Bonfire.UI.Messages.MessagesLive do
   def handle_params(_params, _url, socket) do
     current_user = current_user_required!(socket)
 
-    threads = e(assigns(socket), :threads, nil) || LiveHandler.list_threads(current_user, socket)
+    threads =
+      (ed(assigns(socket), :threads, nil) || LiveHandler.list_threads(current_user, socket))
+      |> debug("list_threads")
 
     {
       :noreply,
