@@ -71,7 +71,7 @@
       context={@context}
     />
   {#else}
-    <div class="flex flex-col items-center gap-2 mt-8 place-content-center">
+    <div class="flex flex-col items-center gap-2 my-8 place-content-center">
       <div class="text-xl font-bold">{l("Welcome to your inbox")}</div>
       <div class="px-6 text-base text-center text-base-content/70">
         {l(
