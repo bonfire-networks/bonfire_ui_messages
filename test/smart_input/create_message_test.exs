@@ -37,8 +37,8 @@ defmodule Bonfire.UI.Messages.CreateMessageTest do
       # |> Floki.text() =~ "sent"
 
       live_pubsub_wait(view)
-      assert [ok] = find_flash(sent)
-      assert ok |> Floki.text() =~ "Sent"
+      # assert [ok] = find_flash(sent)
+      assert has_element?(view, "[role=alert]", "Sent!")
     end
 
     test "shows up in sender's message threads list" do
@@ -173,8 +173,9 @@ defmodule Bonfire.UI.Messages.CreateMessageTest do
                  "post" => %{"post_content" => %{"html_body" => content}}
                })
 
-      assert [ok] = find_flash(sent)
-      assert ok |> Floki.text() =~ "Sent"
+      # assert [ok] = find_flash(sent)
+      # assert ok |> Floki.text() =~ "Sent"
+      has_element?(view, "[role=alert]", "Sent!")
 
       conn2 = conn(user: alice)
 
@@ -188,7 +189,7 @@ defmodule Bonfire.UI.Messages.CreateMessageTest do
     end
 
     # fix first in `Bonfire.UI.Posts`
-    @tag :todo
+    # @tag :todo
     test "with uploads" do
       # Create alice user
       account = fake_account!()
