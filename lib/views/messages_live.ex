@@ -26,6 +26,12 @@ defmodule Bonfire.UI.Messages.MessagesLive do
   def mount(params, _session, socket) do
     feed_id = :inbox
     # feed_id = Bonfire.Social.Feeds.my_feed_id(feed_id, socket)
+    current_user = current_user_required!(socket)
+
+    threads =
+      (ed(assigns(socket), :threads, nil) || LiveHandler.list_threads(current_user, socket))
+      |> debug("list_threads")
+
     {
       :ok,
       socket
@@ -33,9 +39,11 @@ defmodule Bonfire.UI.Messages.MessagesLive do
         nav_items: Bonfire.Common.ExtensionModule.default_nav(),
         showing_within: :messages,
         back: true,
+        threads: threads,
         #  smart_input_opts: %{prompt: l("Message"), icon: "mdi:inbox"},
         #  smart_input_opts: [inline_only: true],
         # to_boundaries: [{"message", "Message"}],
+        without_secondary_widgets: true,
         page_title: l("Messages"),
         page: "messages",
         page_header_icon: "carbon:email",
@@ -44,9 +52,9 @@ defmodule Bonfire.UI.Messages.MessagesLive do
         activity: nil,
         object: nil,
         tab_id: nil,
-        threads: [],
         #  reply_to_id: nil,
-        #  thread_id: nil,
+        thread_id: nil,
+        no_header: true,
         thread_mode: maybe_to_atom(e(params, "mode", nil)) || :flat,
         feedback_title: l("No messages"),
         feedback_message: l("Select a thread or start a new one..."),

@@ -1,28 +1,48 @@
-<main class="h-full bg-base-100 rounded-xl shadow">
-  {#if @tab_id == "thread"}
-    <div class="flex flex-col h-full">
-      <StatelessComponent
-        module={maybe_component(Bonfire.UI.Social.ObjectThreadLive)}
-        myself={nil}
-        page_title={@page_title}
-        feed_id={@feed_id}
-        participants={@participants}
-        object_id={@thread_id}
-        thread_id={@thread_id}
-        activity={@activity}
-        object={@object}
-        url={@url}
-        thread_mode={@thread_mode}
-        show_reply_input
-        replied_activity_class="relative mb-2 rounded-md bg-base-100 hover:bg-base-100"
-        showing_within={@showing_within}
-      />
-    </div>
-  {#else}
-    <Bonfire.UI.Messages.MessageThreadsLive
-      showing_within={:messages}
-      context={current_user_id(@__context__)}
-      threads={@threads}
-    />
-  {/if}
+<main class="h-full bg-base-100 flex flex-1 w-full shadow">
+  <Bonfire.UI.Messages.MessageThreadsLive
+    showing_within={:messages}
+    context={current_user_id(@__context__)}
+    threads={@threads}
+    thread_id={@thread_id}
+  />
+
+  <div class="flex flex-col h-full w-full flex-1 h-[var(--inner-window-height)] overflow-hidden">
+    {#if @tab_id == "thread"}
+      <div class="h-[50px] min-h-[50px] z-[9999999] bg-base-100 sticky top-0 border-b border-base-content/10 flex items-center justify-between px-4">
+        <h3 class="text-lg font-semibold">{@page_title}</h3>
+      </div>
+      <div class="flex flex-1 overflow-y-auto">
+        <StatelessComponent
+          module={maybe_component(Bonfire.UI.Social.ObjectThreadLive)}
+          myself={nil}
+          page_title={@page_title}
+          feed_id={@feed_id}
+          participants={@participants}
+          object_id={@thread_id}
+          thread_id={@thread_id}
+          activity={@activity}
+          object={@object}
+          url={@url}
+          thread_mode={@thread_mode}
+          show_reply_input
+          replied_activity_class="relative mb-2 rounded-md bg-base-100 hover:bg-base-100"
+          showing_within={@showing_within}
+        />
+      </div>
+    {#else}
+      <div class="flex w-full h-full flex-1 place-content-center items-center">
+        <div class="flex flex-col gap-3">
+          <h3 class="text-xl font-bold">{l("Select a conversation")}</h3>
+          <Bonfire.UI.Common.SmartInputButtonLive
+            class="btn btn-primary"
+            showing_within={:messages}
+            create_object_type={:message}
+            icon_class="!w-5 !h-5"
+            icon="tabler:mail-plus"
+            prompt={l("New direct message")}
+          />
+        </div>
+      </div>
+    {/if}
+  </div>
 </main>
