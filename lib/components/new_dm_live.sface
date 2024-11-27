@@ -6,4 +6,8 @@
   icon_class="!w-5 !h-5"
   icon="tabler:mail-plus"
   prompt={l("New message")}
+  smart_input_opts={%{
+    recipients_editable: true,
+    create_object_type: :message
+  }}
 />
