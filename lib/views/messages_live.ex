@@ -55,7 +55,7 @@ defmodule Bonfire.UI.Messages.MessagesLive do
         #  reply_to_id: nil,
         thread_id: nil,
         no_header: true,
-        thread_mode: maybe_to_atom(e(params, "mode", nil)) || :flat,
+        thread_mode: maybe_to_atom(e(params, "mode", nil)),
         feedback_title: l("No messages"),
         feedback_message: l("Select a thread or start a new one..."),
         page_header_aside: [
@@ -271,6 +271,19 @@ defmodule Bonfire.UI.Messages.MessagesLive do
         tab_id: nil
       )
     }
+  end
+
+  def handle_event("send_message", params, socket) do
+    IO.inspect(params, label: "cazz")
+    participants_id = socket.assigns.participants |> Enum.map(fn user -> id(user) end)
+    debug(participants_id, "participants_id")
+
+    new_params =
+      params
+      |> Map.put("to_circles", participants_id)
+      |> debug("params")
+
+    Bonfire.Messages.LiveHandler.send_message(new_params, socket)
   end
 
   def handle_event("remove", %{data: %{"field" => field, "id" => id}}, socket) do

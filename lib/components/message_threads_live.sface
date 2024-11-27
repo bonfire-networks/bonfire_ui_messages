@@ -23,7 +23,7 @@
       context={@context}
     />
 
-    <ul id="message_threads" class="flex flex-col gap-2">
+    <ul id="message_threads" class="flex flex-col">
       <li
         class={
           "hover:bg-base-content/5",

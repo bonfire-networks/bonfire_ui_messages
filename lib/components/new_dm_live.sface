@@ -1,33 +1,9 @@
-<!-- <Bonfire.UI.Common.SmartInputButtonLive
-  class="btn btn-sm btn-primary btn-circle"
+<Bonfire.UI.Common.SmartInputButtonLive
+  class="btn btn-sm btn-ghost btn-circle"
   showing_within={:messages}
   create_object_type={:message}
   as_icon
   icon_class="!w-5 !h-5"
   icon="tabler:mail-plus"
   prompt={l("New message")}
-/> -->
-
-<Bonfire.UI.Common.OpenModalLive id="new_dm" title_text={l("New message")}>
-  <div class="mt-4">
-    <div class="">
-      <input class="input w-full input-bordered" type="text" placeholder={l("Search...")}>
-      <!-- <Bonfire.UI.Common.SelectRecipientsLive
-        preloaded_recipients={e(@preloaded_recipients, [])}
-        to_boundaries={@to_boundaries}
-        to_circles={@to_circles}
-        context_id={@context_id}
-        is_editable={e(@smart_input_opts, :recipients_editable, true)}
-      /> -->
-    </div>
-    <div>
-      <ul class="menu menu-sm">
-      </ul>
-    </div>
-  </div>
-  <:open_btn>
-    <div class="btn btn-ghost btn-sm btn-circle">
-      <#Icon icon="tabler:mail-plus" class="w-5 h-5" />
-    </div>
-  </:open_btn>
-</Bonfire.UI.Common.OpenModalLive>
+/>

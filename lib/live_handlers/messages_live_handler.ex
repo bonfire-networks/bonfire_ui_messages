@@ -139,7 +139,7 @@ defmodule Bonfire.Messages.LiveHandler do
   def send_message(params, socket) do
     attrs =
       params
-      # |> debug("attrs")
+      |> debug("attrs")
       |> input_to_atoms()
       # workaround for input_to_atoms discarding non-atom circle ids
       |> Map.put(:to_circles, params["to_circles"])
