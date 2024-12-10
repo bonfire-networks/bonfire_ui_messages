@@ -32,11 +32,11 @@
             {/for}
           </div>
         </div>
-        <div class="flex items-center gap-2">
+        <!-- <div class="flex items-center gap-2">
           <button type="button" class="btn btn-circle btn-sm">
             <#Icon iconify="ph:gear" class="w-4 h-4" />
           </button>
-        </div>
+        </div> -->
       </div>
       <div class="flex flex-1 overflow-y-auto">
         <StatelessComponent
