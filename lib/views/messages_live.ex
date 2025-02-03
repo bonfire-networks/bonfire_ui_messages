@@ -274,7 +274,6 @@ defmodule Bonfire.UI.Messages.MessagesLive do
   end
 
   def handle_event("send_message", params, socket) do
-    IO.inspect(params, label: "cazz")
     participants_id = socket.assigns.participants |> Enum.map(fn user -> id(user) end)
     debug(participants_id, "participants_id")
 

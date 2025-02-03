@@ -10,13 +10,6 @@
     </div>
   </div>
   {#if e(@threads, :edges, []) != []}
-    <div class="p-4">
-      <input
-        type="text"
-        placeholder={l("Search direct messages")}
-        class="input rounded-full input-bordered w-full"
-      />
-    </div>
     <Bonfire.UI.Common.LoadPreviousLive
       live_handler={Bonfire.Messages}
       page_info={e(@threads, :page_info, nil)}
