@@ -15,6 +15,7 @@
               <Bonfire.UI.Common.AvatarLive
                 class="w-8 h-8 border-base-100"
                 src={Media.avatar_url(participant)}
+                user_id={id(participant)}
                 alt=""
               />
             {/for}
