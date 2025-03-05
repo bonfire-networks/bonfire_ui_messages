@@ -13,7 +13,7 @@
           <div class="avatar-group -space-x-2">
             {#for participant <- @participants}
               <Bonfire.UI.Common.AvatarLive
-                class="w-8 h-8 border-base-100"
+                class="w-8 h-8 border-base-100 rounded-full"
                 src={Media.avatar_url(participant)}
                 user_id={id(participant)}
                 alt=""
