@@ -39,13 +39,13 @@ defmodule Bonfire.UI.Messages.MessagesLive do
         showing_within: :messages,
         back: true,
         threads: threads,
+        thread_active: false,
         #  smart_input_opts: %{prompt: l("Message"), icon: "mdi:inbox"},
         #  smart_input_opts: [inline_only: true],
         # to_boundaries: [{"message", "Message"}],
         without_secondary_widgets: true,
         page_title: l("Messages"),
         page: "messages",
-        page_header_icon: "carbon:email",
         no_index: true,
         feed_id: feed_id,
         activity: nil,
@@ -166,7 +166,7 @@ defmodule Bonfire.UI.Messages.MessagesLive do
       # show a message thread
 
       current_user = current_user_required!(socket)
-
+      # socket = socket |> assign(thread_active: true)
       with {:ok, message} <- Bonfire.Messages.read(id, current_user: current_user) do
         # debug(message, "the first message in thread")
 
@@ -215,6 +215,7 @@ defmodule Bonfire.UI.Messages.MessagesLive do
             # reply_to_id: reply_to_id,
             url: url,
             back: true,
+            thread_active: true,
             activity: activity,
             object: message,
             context_id: thread_id,

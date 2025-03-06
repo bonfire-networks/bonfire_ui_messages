@@ -1,5 +1,5 @@
 <Bonfire.UI.Common.SmartInputButtonLive
-  class="btn btn-sm btn-ghost btn-circle"
+  class="btn btn-sm btn-primary btn-soft btn-circle"
   showing_within={:messages}
   create_object_type={:message}
   as_icon
