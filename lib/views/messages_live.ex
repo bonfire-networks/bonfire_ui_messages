@@ -28,8 +28,9 @@ defmodule Bonfire.UI.Messages.MessagesLive do
     current_user = current_user_required!(socket)
 
     threads =
-      (ed(assigns(socket), :threads, nil) || LiveHandler.list_threads(current_user, socket))
-      |> debug("list_threads")
+      ed(assigns(socket), :threads, nil) || LiveHandler.list_threads(current_user, socket)
+
+    # |> debug("list_threads")
 
     # Subscribe to inbox updates
     if current_user do
@@ -38,9 +39,12 @@ defmodule Bonfire.UI.Messages.MessagesLive do
 
       # Subscribe to user's specific inbox feed
       user_inbox_id =
-        Bonfire.Social.Feeds.my_feed_id(:inbox, current_user) |> debug("user_inbox_id")
+        Bonfire.Social.Feeds.my_feed_id(:inbox, current_user)
 
-      if user_inbox_id, do: PubSub.subscribe(user_inbox_id, socket) |> debug("subscribed")
+      # |> debug("user_inbox_id")
+
+      if user_inbox_id, do: PubSub.subscribe(user_inbox_id, socket)
+      # |> debug("subscribed")
     end
 
     {
@@ -189,7 +193,8 @@ defmodule Bonfire.UI.Messages.MessagesLive do
 
         activity =
           Bonfire.Social.Activities.activity_preloads(activity, :all, current_user: current_user)
-          |> debug("preloaded")
+
+        # |> debug("preloaded")
 
         # reply_to_id = e(params, "reply_to_id", nil)
         thread_id = e(activity, :replied, :thread_id, id)
@@ -269,8 +274,9 @@ defmodule Bonfire.UI.Messages.MessagesLive do
     current_user = current_user_required!(socket)
 
     threads =
-      (ed(assigns(socket), :threads, nil) || LiveHandler.list_threads(current_user, socket))
-      |> debug("list_threads")
+      ed(assigns(socket), :threads, nil) || LiveHandler.list_threads(current_user, socket)
+
+    # |> debug("list_threads")
 
     {
       :noreply,
@@ -287,12 +293,13 @@ defmodule Bonfire.UI.Messages.MessagesLive do
 
   def handle_event("send_message", params, socket) do
     participants_id = socket.assigns.participants |> Enum.map(fn user -> id(user) end)
-    debug(participants_id, "participants_id")
+    # debug(participants_id, "participants_id")
 
     new_params =
       params
       |> Map.put("to_circles", participants_id)
-      |> debug("params")
+
+    # |> debug("params")
 
     Bonfire.Messages.LiveHandler.send_message(new_params, socket)
   end
@@ -300,9 +307,9 @@ defmodule Bonfire.UI.Messages.MessagesLive do
   def handle_event("remove", %{data: %{"field" => field, "id" => id}}, socket) do
     {:noreply,
      socket
-     |> update(maybe_to_atom(field) |> debug("f"), fn current_to_circles ->
-       (List.wrap(current_to_circles) -- [{id}])
-       |> debug("v")
+     |> update(maybe_to_atom(field), fn current_to_circles ->
+       List.wrap(current_to_circles) -- [{id}]
+       #  |> debug("v")
      end)}
   end
 

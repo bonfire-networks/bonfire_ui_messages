@@ -23,7 +23,7 @@ defmodule Bonfire.UI.Messages.CreateMessageTest do
       # open_browser(view)
 
       # wait for persistent smart input to be ready
-      live_pubsub_wait(view)
+      live_async_wait(view)
 
       assert sent =
                view
@@ -36,7 +36,7 @@ defmodule Bonfire.UI.Messages.CreateMessageTest do
 
       # |> Floki.text() =~ "sent"
 
-      live_pubsub_wait(view)
+      live_async_wait(view)
       # assert [ok] = find_flash(sent)
       assert has_element?(view, "[role=alert]", "Sent!")
     end
@@ -54,7 +54,7 @@ defmodule Bonfire.UI.Messages.CreateMessageTest do
       # |> IO.inspect
       {:ok, view, _html} = live(conn, next)
       # open_browser(view)
-      live_pubsub_wait(view)
+      live_async_wait(view)
 
       assert sent =
                view
@@ -84,7 +84,7 @@ defmodule Bonfire.UI.Messages.CreateMessageTest do
       # |> IO.inspect
       {:ok, view, _html} = live(conn, next)
       # open_browser(view)
-      live_pubsub_wait(view)
+      live_async_wait(view)
 
       assert sent =
                view
@@ -116,7 +116,7 @@ defmodule Bonfire.UI.Messages.CreateMessageTest do
       # |> IO.inspect
       {:ok, view, _html} = live(conn, next)
       # open_browser(view)
-      live_pubsub_wait(view)
+      live_async_wait(view)
 
       assert sent =
                view
@@ -155,7 +155,7 @@ defmodule Bonfire.UI.Messages.CreateMessageTest do
       next = "/messages/#{id(op)}"
       # |> IO.inspect
       {:ok, view, _html} = live(conn, next)
-      live_pubsub_wait(view)
+      live_async_wait(view)
 
       # open_browser(view)
 
@@ -182,7 +182,7 @@ defmodule Bonfire.UI.Messages.CreateMessageTest do
       # next = "/@#{bob.character.username}"
       # |> IO.inspect
       {:ok, feed, _html} = live(conn2, next)
-      live_pubsub_wait(view)
+      live_async_wait(view)
       open_browser(view)
 
       assert has_element?(feed, "[data-role=thread]", content)
