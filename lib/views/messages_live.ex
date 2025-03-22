@@ -31,6 +31,18 @@ defmodule Bonfire.UI.Messages.MessagesLive do
       (ed(assigns(socket), :threads, nil) || LiveHandler.list_threads(current_user, socket))
       |> debug("list_threads")
 
+    # Subscribe to inbox updates
+    if current_user do
+      # Subscribe to a general inbox feed?
+      # PubSub.subscribe(:inbox, socket)
+
+      # Subscribe to user's specific inbox feed
+      user_inbox_id =
+        Bonfire.Social.Feeds.my_feed_id(:inbox, current_user) |> debug("user_inbox_id")
+
+      if user_inbox_id, do: PubSub.subscribe(user_inbox_id, socket) |> debug("subscribed")
+    end
+
     {
       :ok,
       socket
@@ -292,5 +304,26 @@ defmodule Bonfire.UI.Messages.MessagesLive do
        (List.wrap(current_to_circles) -- [{id}])
        |> debug("v")
      end)}
+  end
+
+  # Add handler for PubSub messages
+  def handle_info({:new_message, _}, socket) do
+    current_user = current_user_required!(socket)
+
+    # Check if we're already viewing this thread
+    current_thread_id = e(assigns(socket), :thread_id, nil)
+
+    # TODO: just add the new thread instead? but need to handle cases where it's a reply to an existing thread
+    threads = LiveHandler.list_threads(current_user, socket)
+
+    {:noreply,
+     socket
+     |> assign(threads: threads)}
+  end
+
+  # Handle other PubSub messages
+  def handle_info(message, socket) do
+    debug(message, "unhandled")
+    {:noreply, socket}
   end
 end
