@@ -9,7 +9,7 @@
       <StatelessComponent
         module={maybe_component(Bonfire.UI.Social.HeaderAsideNotificationsSeenLive, @__context__)}
         feed_id={:inbox}
-        feed_name={"messages"}
+        feed_name="messages"
       />
       <Bonfire.UI.Messages.NewDmLive />
     </div>
