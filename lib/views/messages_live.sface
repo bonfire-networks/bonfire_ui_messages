@@ -73,10 +73,9 @@
           <Bonfire.UI.Common.SmartInputButtonLive
             class="btn btn-primary"
             showing_within={:messages}
-            create_object_type={:message}
             smart_input_opts={%{
               recipients_editable: true,
-              create_object_type: :message
+              create_object_type: "message"
             }}
             icon_class="!w-5 !h-5"
             icon="tabler:mail-plus"
