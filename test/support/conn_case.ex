@@ -31,6 +31,8 @@ defmodule Bonfire.UI.Messages.ConnCase do
       import Bonfire.UI.Messages.Test.ConnHelpers
       import Bonfire.UI.Messages.Test.FakeHelpers
 
+      import PhoenixTest
+
       import Untangle
       use Arrows
       # alias Bonfire.UI.Messages.Router.Helpers, as: Routes

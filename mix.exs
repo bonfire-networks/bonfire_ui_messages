@@ -26,7 +26,8 @@ defmodule Bonfire.UI.Messages.MixProject do
       deps: Mess.deps([
         {:phoenix_live_reload, "~> 1.2", only: :dev},
         {:floki, ">= 0.0.0", only: [:dev, :test]},
-        {:bonfire_tag, git: "https://github.com/bonfire-networks/bonfire_tag",  optional: true, runtime: false}
+        {:bonfire_tag, git: "https://github.com/bonfire-networks/bonfire_tag",  optional: true, runtime: false},
+        # {:phoenix_test, "~> 0.6", only: :test, runtime: false},
       ]),
       package: [
         licenses: ["AGPL v3"]
