@@ -103,7 +103,10 @@
       <Bonfire.UI.Common.SmartInputButtonLive
         class="gap-2 mt-3 btn btn-sm btn-soft btn-primary"
         showing_within={:messages}
-        create_object_type={:message}
+        smart_input_opts={%{
+          recipients_editable: true,
+          create_object_type: "message"
+        }}
         icon="tabler:mail-plus"
         prompt={"#{l("Send a message")}..."}
       />
