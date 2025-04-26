@@ -21,7 +21,7 @@
       context={@context}
     />
 
-    <ul id="message_threads" class="flex flex-col">
+    <ul id="message_threads" class="flex flex-col divide-y divide-base-content/10">
       <li
         class={
           "hover:bg-base-content/5",

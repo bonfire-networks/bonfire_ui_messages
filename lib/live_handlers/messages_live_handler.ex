@@ -162,14 +162,18 @@ defmodule Bonfire.Messages.LiveHandler do
     # FIXME: assign or pubsub the new message and patch instead
     {:noreply,
      socket
-     |> assign_flash(:info, l("Sent!"))
+     |> push_event("smart_input:reset", %{})
      |> Bonfire.UI.Common.SmartInput.LiveHandler.reset_input()}
+     |> assign_flash(:info, l("Sent!"))
+    #  |> Bonfire.UI.Common.SmartInput.LiveHandler.reset_input()}
   end
 
   defp message_sent(_sent, _attrs, socket) do
     {
       :noreply,
       socket
+      |> push_event("smart_input:reset", %{})
+     |> Bonfire.UI.Common.SmartInput.LiveHandler.reset_input()
       |> assign_flash(:info, l("Sent!"))
       #  |> redirect_to("/messages/#{e(sent, :replied, :thread_id, nil) || uid(sent)}##{uid(sent)}")
     }
