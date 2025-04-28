@@ -164,7 +164,8 @@ defmodule Bonfire.Messages.LiveHandler do
      socket
      |> push_event("smart_input:reset", %{})
      |> Bonfire.UI.Common.SmartInput.LiveHandler.reset_input()}
-     |> assign_flash(:info, l("Sent!"))
+    |> assign_flash(:info, l("Sent!"))
+
     #  |> Bonfire.UI.Common.SmartInput.LiveHandler.reset_input()}
   end
 
@@ -173,7 +174,7 @@ defmodule Bonfire.Messages.LiveHandler do
       :noreply,
       socket
       |> push_event("smart_input:reset", %{})
-     |> Bonfire.UI.Common.SmartInput.LiveHandler.reset_input()
+      |> Bonfire.UI.Common.SmartInput.LiveHandler.reset_input()
       |> assign_flash(:info, l("Sent!"))
       #  |> redirect_to("/messages/#{e(sent, :replied, :thread_id, nil) || uid(sent)}##{uid(sent)}")
     }
