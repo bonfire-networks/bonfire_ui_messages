@@ -44,7 +44,10 @@
               <div class="flex-1 w-full min-w-0 sm:flex sm:items-center sm:justify-between">
                 <div class="w-full">
                   <div class="flex gap-3 items-center justify-between">
-                    <div data-id="thread_participants" class="flex-1 max-w-[320px] text-sm font-semibold truncate text-base-content">
+                    <div
+                      data-id="thread_participants"
+                      class="flex-1 max-w-[320px] text-sm font-semibold truncate text-base-content"
+                    >
                       {!-- FIXME: do not look this up on render --}
                       {#case {LiveHandler.thread_meta(:title, e(activity, :replied, :thread_id, nil), activity, nil,
                            current_user: current_user(@__context__)
