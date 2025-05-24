@@ -11,7 +11,45 @@ defmodule Bonfire.Messages.LiveHandler do
   end
 
   def handle_event("load_more", attrs, socket) do
-    live_more(nil, Keyword.new(input_to_atoms(attrs)), socket)
+    current_user = current_user(socket)
+    
+    if is_nil(current_user) do
+      {:noreply, assign_flash(socket, :error, l("User not found"))}
+    else
+      pagination = input_to_atoms(attrs)
+      
+      try do
+        # Load just the next page of threads
+        new_threads = Messages.list(current_user, nil, 
+          [latest_in_threads: true] ++ [pagination: pagination]
+        )
+        
+        # Get current threads from socket assigns
+        current_threads = e(assigns(socket), :threads, %{edges: [], page_info: %{}})
+        
+        # Append new threads to existing ones
+        updated_threads = %{
+          edges: e(current_threads, :edges, []) ++ e(new_threads, :edges, []),
+          page_info: e(new_threads, :page_info, %{})
+        }
+        
+        {:noreply,
+         socket
+         |> assign(
+           threads: updated_threads,
+           loading: false
+         )}
+      rescue
+        error ->
+          error(error, "Failed to load more messages")
+          {:noreply, assign_flash(socket, :error, l("Could not load more messages"))}
+      end
+    end
+  end
+
+  def handle_event("preload_more", attrs, socket) do
+    # Same as load_more but for infinite scroll preloading
+    handle_event("load_more", attrs, socket)
   end
 
   def handle_event("send", params, socket) do
@@ -41,20 +79,54 @@ defmodule Bonfire.Messages.LiveHandler do
 
   def live_more(context, opts, socket) do
     debug(opts, "paginate threads")
-
-    {:noreply,
-     socket
-     |> assign(
-       sidebar_widgets:
-         threads_widget(
-           current_user(assigns(socket)),
-           context,
-           [tab_id: nil, thread_id: e(assigns(socket), :thread_id, nil)] ++ List.wrap(opts)
-         )
-     )}
+    current_user = current_user(assigns(socket))
+    
+    if is_nil(current_user) do
+      {:noreply, assign_flash(socket, :error, l("User not found"))}
+    else
+      try do
+        # Load just the next page of threads
+        new_threads = Messages.list(current_user, context, 
+          [latest_in_threads: true] ++ List.wrap(opts)
+        )
+        
+        # Get current threads from widget or socket assigns
+        current_threads = e(assigns(socket), :threads, %{edges: [], page_info: %{}})
+        
+        # Append new threads to existing ones
+        updated_threads = %{
+          edges: e(current_threads, :edges, []) ++ e(new_threads, :edges, []),
+          page_info: e(new_threads, :page_info, %{})
+        }
+        
+        {:noreply,
+         socket
+         |> assign(
+           threads: updated_threads,
+           sidebar_widgets:
+             threads_widget(
+               current_user,
+               context,
+               [
+                 tab_id: nil, 
+                 thread_id: e(assigns(socket), :thread_id, nil),
+                 threads: updated_threads
+               ] ++ List.wrap(opts)
+             ),
+           loading: false
+         )}
+      rescue
+        error ->
+          error(error, "Failed to load more threads")
+          {:noreply, assign_flash(socket, :error, l("Could not load more threads"))}
+      end
+    end
   end
 
   def threads_widget(current_user, user \\ nil, opts \\ []) do
+    # Use passed threads or load them fresh
+    threads = opts[:threads] || list_threads(current_user, user, opts)
+    
     [
       users: [
         main: [
@@ -62,7 +134,7 @@ defmodule Bonfire.Messages.LiveHandler do
            [
              context: uid(user),
              showing_within: :messages,
-             threads: list_threads(current_user, user, opts),
+             threads: threads,
              thread_id: opts[:thread_id]
            ] ++ List.wrap(opts)}
         ]
@@ -74,10 +146,12 @@ defmodule Bonfire.Messages.LiveHandler do
   end
 
   def list_threads(current_user, user \\ nil, opts \\ []) do
-    # TODO: put limit in Settings
+    # Use config pagination limit unless overridden
+    default_limit = Bonfire.Common.Config.get(:default_pagination_limit, 8)
+    
     if current_user,
       do:
-        Messages.list(current_user, user, [latest_in_threads: true, limit: 8] ++ List.wrap(opts))
+        Messages.list(current_user, user, [latest_in_threads: true, limit: default_limit] ++ List.wrap(opts))
         # |> debug()
         |> repo().maybe_preload(activity: [replied: [thread: :named]])
   end
