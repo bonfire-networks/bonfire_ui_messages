@@ -78,7 +78,7 @@ defmodule Bonfire.Messages.LiveHandler do
 
   def live_more(context, opts, socket) do
     debug(opts, "paginate threads")
-    current_user = current_user(assigns(socket))
+    current_user = current_user(socket)
 
     if is_nil(current_user) do
       {:noreply, assign_flash(socket, :error, l("User not found"))}
