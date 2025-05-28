@@ -24,8 +24,8 @@
     <ul id="message_threads" class="flex flex-col divide-y divide-base-content/10">
       <li
         class={
-          "hover:bg-base-content/5",
-          "border-l-2 border-primary bg-base-content/5":
+          "hover:bg-base-content/5 relative",
+          "message-active":
             @thread_id == e(activity, :replied, :thread_id, nil)
         }
         :for={%{activity: activity} <- e(@threads, :edges, [])}

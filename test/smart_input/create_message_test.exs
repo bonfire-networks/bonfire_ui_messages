@@ -11,7 +11,7 @@ defmodule Bonfire.UI.Messages.CreateMessageTest do
   setup do
     account = fake_account!()
     me = fake_user!(account)
-    recipient = fake_user!()
+    recipient = fake_user!(account)
 
     conn = conn(user: me, account: account)
 
@@ -41,7 +41,8 @@ defmodule Bonfire.UI.Messages.CreateMessageTest do
   test "message shows up in recipient's message threads list", %{
     conn: conn,
     me: me,
-    recipient: recipient
+    recipient: recipient,
+    account: account
   } do
     content = "here is an epic html message"
 
@@ -51,22 +52,23 @@ defmodule Bonfire.UI.Messages.CreateMessageTest do
       }
     }
 
-    {:ok, _op} = Messages.send(me, attrs, recipient)
-
+    {:ok, op} = Messages.send(me, attrs, recipient)
+    IO.inspect(op, label: "Message Operation")
     # Create new connection as recipient
-    recipient_conn = conn(user: recipient)
+    recipient_conn = conn(user: recipient, account: account)
 
     recipient_conn
     |> visit("/messages")
+    |> PhoenixTest.open_browser()
     |> assert_has("#message_threads", text: content)
   end
 
   test "does not show up on my profile timeline", %{conn: conn, me: me, recipient: recipient} do
     content = "here is an epic html message"
-    next = "/settings"
-    # |> IO.inspect
-    {:ok, view, _html} = live(conn, next)
-    # open_browser(view)
+
+    session = visit(conn, "/settings")
+
+    {:ok, view, _html} = live(conn, "/settings")
     live_async_wait(view)
 
     assert sent =
@@ -78,10 +80,9 @@ defmodule Bonfire.UI.Messages.CreateMessageTest do
                "post" => %{"post_content" => %{"html_body" => content}}
              })
 
-    next = "/user"
-    # |> IO.inspect
-    {:ok, profile, _html} = live(conn, next)
-    refute has_element?(profile, "[data-id=feed]", content)
+    session
+    |> visit("/user")
+    |> refute_has("[data-id=feed]", text: content)
   end
 
   test "recipient can send reply, which appears instantly on thread page", %{
