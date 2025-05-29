@@ -25,8 +25,7 @@
       <li
         class={
           "hover:bg-base-content/5 relative",
-          "message-active":
-            @thread_id == e(activity, :replied, :thread_id, nil)
+          "message-active": @thread_id == e(activity, :replied, :thread_id, nil)
         }
         :for={%{activity: activity} <- e(@threads, :edges, [])}
       >
