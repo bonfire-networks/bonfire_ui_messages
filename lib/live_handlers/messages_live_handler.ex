@@ -77,7 +77,7 @@ defmodule Bonfire.Messages.LiveHandler do
   end
 
   def live_more(context, opts, socket) do
-    debug(opts, "paginate threads")
+    IO.inspect(opts, label: "paginate threads")
     current_user = current_user(socket)
 
     if is_nil(current_user) do
@@ -101,16 +101,16 @@ defmodule Bonfire.Messages.LiveHandler do
          socket
          |> assign(
            threads: updated_threads,
-           sidebar_widgets:
-             threads_widget(
-               current_user,
-               context,
-               [
-                 tab_id: nil,
-                 thread_id: e(assigns(socket), :thread_id, nil),
-                 threads: updated_threads
-               ] ++ List.wrap(opts)
-             ),
+          #  sidebar_widgets:
+          #    threads_widget(
+          #      current_user,
+          #      context,
+          #      [
+          #        tab_id: nil,
+          #        thread_id: e(assigns(socket), :thread_id, nil),
+          #        threads: updated_threads
+          #      ] ++ List.wrap(opts)
+          #    ),
            loading: false
          )}
       rescue
@@ -121,27 +121,27 @@ defmodule Bonfire.Messages.LiveHandler do
     end
   end
 
-  def threads_widget(current_user, user \\ nil, opts \\ []) do
-    # Use passed threads or load them fresh
-    threads = opts[:threads] || list_threads(current_user, user, opts)
+  # def threads_widget(current_user, user \\ nil, opts \\ []) do
+  #   # Use passed threads or load them fresh
+  #   threads = opts[:threads] || list_threads(current_user, user, opts)
 
-    [
-      users: [
-        main: [
-          {Bonfire.UI.Messages.MessageThreadsLive,
-           [
-             context: uid(user),
-             showing_within: :messages,
-             threads: threads,
-             thread_id: opts[:thread_id]
-           ] ++ List.wrap(opts)}
-        ]
-        # secondary: [
-        #   {Bonfire.Tag.Web.WidgetTagsLive, []}
-        # ]
-      ]
-    ]
-  end
+  #   [
+  #     users: [
+  #       main: [
+  #         {Bonfire.UI.Messages.MessageThreadsLive,
+  #          [
+  #            context: uid(user),
+  #            showing_within: :messages,
+  #            threads: threads,
+  #            thread_id: opts[:thread_id]
+  #          ] ++ List.wrap(opts)}
+  #       ]
+  #       # secondary: [
+  #       #   {Bonfire.Tag.Web.WidgetTagsLive, []}
+  #       # ]
+  #     ]
+  #   ]
+  # end
 
   def list_threads(current_user, user \\ nil, opts \\ []) do
     # Use config pagination limit unless overridden
