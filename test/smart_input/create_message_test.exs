@@ -53,13 +53,13 @@ defmodule Bonfire.UI.Messages.CreateMessageTest do
     }
 
     {:ok, op} = Messages.send(me, attrs, recipient)
-    IO.inspect(op, label: "Message Operation")
+    # IO.inspect(op, label: "Message Operation")
     # Create new connection as recipient
     recipient_conn = conn(user: recipient, account: account)
 
     recipient_conn
     |> visit("/messages")
-    |> PhoenixTest.open_browser()
+    # |> PhoenixTest.open_browser()
     |> assert_has("#message_threads", text: content)
   end
 
