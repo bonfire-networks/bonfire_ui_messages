@@ -101,16 +101,16 @@ defmodule Bonfire.Messages.LiveHandler do
          socket
          |> assign(
            threads: updated_threads,
-          #  sidebar_widgets:
-          #    threads_widget(
-          #      current_user,
-          #      context,
-          #      [
-          #        tab_id: nil,
-          #        thread_id: e(assigns(socket), :thread_id, nil),
-          #        threads: updated_threads
-          #      ] ++ List.wrap(opts)
-          #    ),
+           #  sidebar_widgets:
+           #    threads_widget(
+           #      current_user,
+           #      context,
+           #      [
+           #        tab_id: nil,
+           #        thread_id: e(assigns(socket), :thread_id, nil),
+           #        threads: updated_threads
+           #      ] ++ List.wrap(opts)
+           #    ),
            loading: false
          )}
       rescue
