@@ -35,7 +35,7 @@ defmodule Bonfire.UI.Messages.CreateMessageTest do
 
     conn
     |> visit("/messages")
-    |> assert_has("#message_threads", text: content)
+    |> assert_has_or_open_browser("#message_threads", text: content)
   end
 
   test "message shows up in recipient's message threads list", %{
@@ -59,8 +59,7 @@ defmodule Bonfire.UI.Messages.CreateMessageTest do
 
     recipient_conn
     |> visit("/messages")
-    # |> PhoenixTest.open_browser()
-    |> assert_has("#message_threads", text: content)
+    |> assert_has_or_open_browser("#message_threads", text: content)
   end
 
   test "does not show up on my profile timeline", %{conn: conn, me: me, recipient: recipient} do
@@ -115,6 +114,6 @@ defmodule Bonfire.UI.Messages.CreateMessageTest do
 
     conn
     |> visit(next)
-    |> assert_has("article", text: content)
+    |> assert_has_or_open_browser("article", text: content)
   end
 end
