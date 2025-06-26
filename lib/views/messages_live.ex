@@ -284,7 +284,7 @@ defmodule Bonfire.UI.Messages.MessagesLive do
       |> assign(
         threads: threads,
         page_title: l("Direct Messages"),
-
+        thread_active: false,
         # to_boundaries: [{"message", "Message"}],
         tab_id: nil
       )
