@@ -11,7 +11,6 @@
         feed_id={:inbox}
         feed_name="messages"
       />
-      <Bonfire.UI.Messages.NewDmLive />
     </div>
   </div>
   {#if e(@threads, :edges, []) != []}
@@ -22,6 +21,9 @@
     /> -->
 
     <ul id="message_threads" class="flex flex-col divide-y divide-base-content/10">
+      <div class="p-2">
+        <Bonfire.UI.Messages.NewDmLive />
+      </div>
       <li
         class={
           "hover:bg-base-content/5 relative",
