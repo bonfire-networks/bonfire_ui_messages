@@ -3,17 +3,17 @@
   "!hidden md:!block": e(@thread_active, false)
 }>
   <div class="sticky top-0 bg-base-100 z-[9999999999] pt-safe">
-  <div class="min-h-[50px] border-b border-base-content/10 flex justify-between items-center px-3">
-    <Bonfire.UI.Common.BackButtonLive />
-    <h3 class="text-lg font-bold flex-1">{l("Messages")}</h3>
-    <div class="flex items-center gap-2">
-      <StatelessComponent
-        module={maybe_component(Bonfire.UI.Social.HeaderAsideNotificationsSeenLive, @__context__)}
-        feed_id={:inbox}
-        feed_name="messages"
-      />
+    <div class="min-h-[50px] border-b border-base-content/10 flex justify-between items-center px-3">
+      <Bonfire.UI.Common.BackButtonLive />
+      <h3 class="text-lg font-bold flex-1">{l("Messages")}</h3>
+      <div class="flex items-center gap-2">
+        <StatelessComponent
+          module={maybe_component(Bonfire.UI.Social.HeaderAsideNotificationsSeenLive, @__context__)}
+          feed_id={:inbox}
+          feed_name="messages"
+        />
+      </div>
     </div>
-  </div>
   </div>
   {#if e(@threads, :edges, []) != []}
     <!-- <Bonfire.UI.Common.LoadPreviousLive

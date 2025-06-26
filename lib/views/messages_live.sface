@@ -10,7 +10,7 @@
   <div class={
     "flex flex-col w-full flex-1",
     "hidden md:flex": @tab_id != "thread",
-    "flex": @tab_id == "thread"
+    flex: @tab_id == "thread"
   }>
     {#if @tab_id == "thread"}
       <div class="pt-safe z-[9999999] bg-base-100 sticky top-0">
