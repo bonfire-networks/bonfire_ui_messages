@@ -186,14 +186,16 @@ defmodule Bonfire.Messages.LiveHandler do
     #       |> Enum.reject(&(&1.id == current_user.id))
     #       |> Enum.map(&{e(&1, :character, :username, l("someone")), e(&1, :id, nil)})
 
+    current_user_id = current_user_id(opts)
+
     names =
       if is_list(participants) and participants != [],
         do:
           participants
-          |> Enum.reject(&(&1.id == current_user_id(opts)))
+          |> Enum.reject(&(&1.id == current_user_id))
           |> Enum.map_join(
             " & ",
-            &e(&1, :profile, :name, e(&1, :character, :username, l("someone else")))
+            &(e(&1, :profile, :name, nil) || e(&1, :character, :username, l("someone else")))
           )
 
     # mentions = if length(participants)>0, do: Enum.map_join(participants, " ", & "@"<>e(&1, :character, :username, ""))<>" "
@@ -209,7 +211,8 @@ defmodule Bonfire.Messages.LiveHandler do
       names: names,
       title: title
     }
-    |> debug(thread_id)
+
+    # |> debug(thread_id)
   end
 
   def send_message(params, socket) do

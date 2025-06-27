@@ -19,7 +19,7 @@
             <span class="md:hidden flex-none">
               <Bonfire.UI.Common.BackButtonLive back="/messages" />
             </span>
-            <div class="avatar-group -space-x-2 flex-none hidden lg:flex">
+            {!-- <div class="avatar-group -space-x-2 flex-none hidden lg:flex">
               {#for participant <- @participants}
                 <Bonfire.UI.Common.AvatarLive
                   class="w-8 h-8 border-base-100 rounded-full"
@@ -28,9 +28,9 @@
                   alt=""
                 />
               {/for}
-            </div>
+            </div> --}
             <h3 class="font-semibold whitespace-nowrap overflow-hidden text-ellipsis min-w-0 flex-1 max-w-[320px] text-sm">
-              {Enum.map_join(@participants, ", ", &e(&1, :profile, :name, ""))}
+              {@participants_names}
             </h3>
           </div>
         </div>
@@ -46,7 +46,7 @@
           thread_id={@thread_id}
           activity={@activity}
           object={@object}
-          sort_order={:asc}
+          feed_filters={%{sort_order: {:asc}}}
           url={@url}
           show_reply_input
           replied_activity_class="relative mb-2 rounded-md bg-base-100 hover:bg-base-100"

@@ -182,19 +182,34 @@ defmodule Bonfire.UI.Messages.MessagesLive do
       # show a message thread
 
       current_user = current_user_required!(socket)
+
+      # Bonfire.Social.Objects.LiveHandler.default_preloads()
+      preloads = [
+        # :default,
+        :with_creator,
+        :with_post_content,
+        # :with_reply_to,
+        :with_thread_name,
+        :with_parent,
+        :with_media,
+        :maybe_with_labelled,
+        # :tags,
+        :with_object_peered
+      ]
+
       # socket = socket |> assign(thread_active: true)
-      with {:ok, message} <- Bonfire.Messages.read(id, current_user: current_user) do
+      with {:ok, message} <-
+             Bonfire.Messages.read(id, current_user: current_user, preload: preloads) do
         # debug(message, "the first message in thread")
+
+        # message =
+        #   Bonfire.Social.Activities.activity_preloads(message, preloads, current_user: current_user)
+        # |> debug("preloaded")
 
         # TODO: clean up the following
         {activity, message} = Map.pop(message, :activity)
-        {preloaded_object, activity} = Map.pop(activity, :object)
-        message = Map.merge(message, preloaded_object)
-
-        activity =
-          Bonfire.Social.Activities.activity_preloads(activity, :all, current_user: current_user)
-
-        # |> debug("preloaded")
+        # {preloaded_object, activity} = Map.pop(activity, :object)
+        # message = Map.merge(message, preloaded_object)
 
         # reply_to_id = e(params, "reply_to_id", nil)
         thread_id = e(activity, :replied, :thread_id, id)
@@ -219,8 +234,11 @@ defmodule Bonfire.UI.Messages.MessagesLive do
 
         %{
           participants: participants,
+          names: participants_names,
           title: title
         } = LiveHandler.thread_meta(thread_id, activity, message, current_user: current_user)
+
+        #  |> debug("thread_meta")
 
         {
           :noreply,
@@ -239,6 +257,7 @@ defmodule Bonfire.UI.Messages.MessagesLive do
             thread_id: thread_id,
             # reply_to_id: thread_id,
             participants: participants,
+            participants_names: participants_names,
             # to_circles: to_circles || [],
             page_header_aside: [],
             sidebar_widgets: [
