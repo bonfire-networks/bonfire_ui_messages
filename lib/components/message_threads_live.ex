@@ -16,7 +16,7 @@ defmodule Bonfire.UI.Messages.MessageThreadsLive do
       end
 
     if thread_url && uid(thread) != uid(object) do
-      "#{thread_url}#comment_#{uid(object)}"
+      "#{thread_url}/reply/#{uid(object)}"
     else
       "/messages/#{uid(object)}"
     end
