@@ -34,7 +34,7 @@
         :for={%{activity: activity} <- e(@threads, :edges, [])}
       >
         <LinkPatchLive
-          to={permalink(e(activity, :replied, :thread_id, nil), e(activity, :object_id, nil))}
+          to={permalink(e(activity, :replied, nil), e(activity, :object, nil) || e(activity, :object_id, nil))}
           class="block"
         >
           <div class="relative w-full indicator">

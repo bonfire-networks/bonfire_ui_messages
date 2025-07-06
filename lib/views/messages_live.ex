@@ -175,7 +175,7 @@ defmodule Bonfire.UI.Messages.MessagesLive do
   #    )}
   # end
 
-  def handle_params(%{"id" => id} = _params, url, socket) do
+  def handle_params(%{"id" => id} = params, url, socket) do
     if not is_uid?(id) do
       handle_params(%{"username" => id}, url, socket)
     else
@@ -211,8 +211,8 @@ defmodule Bonfire.UI.Messages.MessagesLive do
         # {preloaded_object, activity} = Map.pop(activity, :object)
         # message = Map.merge(message, preloaded_object)
 
-        # reply_to_id = e(params, "reply_to_id", nil)
-        thread_id = e(activity, :replied, :thread_id, id)
+        reply_id = e(params, "reply_id", nil)
+        thread_id = e(activity, :replied, :thread_id, nil) || id
 
         # debug(activity, "activity")
         # smart_input_prompt =
@@ -227,7 +227,7 @@ defmodule Bonfire.UI.Messages.MessagesLive do
         #           message,
         #           :post_content,
         #           :summary,
-        #           e(message, :post_content, :html_body, reply_to_id)
+        #           e(message, :post_content, :html_body, reply_id)
         #         )
         #       )
         #     )
@@ -247,7 +247,8 @@ defmodule Bonfire.UI.Messages.MessagesLive do
             page_title: e(activity, :replied, :thread, :named, :name, nil) || title,
             page: "messages",
             tab_id: "thread",
-            # reply_to_id: reply_to_id,
+            reply_id: reply_id,
+            # reply_to_id: thread_id,
             url: url,
             back: true,
             thread_active: true,
@@ -255,7 +256,12 @@ defmodule Bonfire.UI.Messages.MessagesLive do
             object: message,
             context_id: thread_id,
             thread_id: thread_id,
-            # reply_to_id: thread_id,
+            include_path_ids:
+              Bonfire.Social.Threads.LiveHandler.maybe_include_path_ids(
+                reply_id,
+                e(params, "level", nil),
+                e(assigns(socket), :__context__, nil) || assigns(socket)
+              ),
             participants: participants,
             participants_names: participants_names,
             # to_circles: to_circles || [],

@@ -16,7 +16,12 @@ defmodule Bonfire.UI.Messages.Routes do
         live("/message/:id", MessagesLive)
 
         live("/messages/:id", MessagesLive, as: Bonfire.Data.Social.Message)
-        live("/messages/:id/reply/:reply_to_id", MessagesLive, as: Bonfire.Data.Social.Message)
+        live("/messages/:id/reply/:reply_id", MessagesLive, as: Bonfire.Data.Social.Message)
+
+        live("/messages/:id/reply/:level/:reply_id", MessagesLive,
+          as: Bonfire.Data.Social.Message
+        )
+
         live("/messages/@:username", MessagesLive, as: Bonfire.Data.Social.Message)
         live("/messages", MessagesLive, as: Bonfire.Data.Social.Message)
       end
