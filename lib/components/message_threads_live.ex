@@ -8,8 +8,13 @@ defmodule Bonfire.UI.Messages.MessageThreadsLive do
   prop context, :any, default: nil
   prop showing_within, :atom, default: nil
   prop thread_active, :boolean, default: false
+  prop selected_tab, :string, default: "all"
 
   def permalink(replied, object) do
+    permalink(replied, object, nil)
+  end
+
+  def permalink(replied, object, tab) do
     thread_id = e(replied, :thread_id, nil)
     object_id = id(object)
 
@@ -18,7 +23,7 @@ defmodule Bonfire.UI.Messages.MessageThreadsLive do
         "/messages/#{thread_id}"
       end
 
-    if thread_url && thread_id != object_id do
+    base_url = if thread_url && thread_id != object_id do
       # e(assigns, :thread_level, nil) || 
       thread_level =
         length(e(replied, :path, []))
@@ -30,6 +35,12 @@ defmodule Bonfire.UI.Messages.MessageThreadsLive do
       end
     else
       "/messages/#{object_id}"
+    end
+
+    # Add tab parameter if provided and valid
+    case tab do
+      tab when tab in ["all", "followed_only"] -> "#{base_url}?tab=#{tab}"
+      _ -> base_url
     end
   end
 end

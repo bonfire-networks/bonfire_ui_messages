@@ -147,6 +147,19 @@ defmodule Bonfire.Messages.LiveHandler do
     # Use config pagination limit unless overridden
     default_limit = Bonfire.Common.Config.get(:default_pagination_limit, 8)
 
+    # Handle tab-based filtering 
+    tab = opts[:tab] || "all"
+    relationship_filter = case tab do
+      "followed_only" -> :followed_only  # Show only messages from followed users
+      _ -> :all  # Show all messages
+    end
+
+    opts = opts
+    |> Keyword.put(:relationship_filter, relationship_filter)
+    |> Keyword.put(:show_filtered, false)  # We're not using show_filtered anymore
+    
+    # IO.inspect({:tab, tab, :filter, relationship_filter}, label: "TAB_AND_FILTER")
+
     if current_user,
       do:
         Messages.list(
