@@ -21,6 +21,7 @@
               <Bonfire.UI.Common.BackButtonLive back={
                 case @selected_tab do
                   "followed_only" -> "/messages?tab=followed_only"
+                  "not_followed" -> "/messages?tab=not_followed"
                   _ -> "/messages?tab=all"
                 end
               } />

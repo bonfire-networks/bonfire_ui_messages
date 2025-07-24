@@ -39,7 +39,7 @@ defmodule Bonfire.UI.Messages.MessageThreadsLive do
 
     # Add tab parameter if provided and valid
     case tab do
-      tab when tab in ["all", "followed_only"] -> "#{base_url}?tab=#{tab}"
+      tab when tab in ["all", "followed_only", "not_followed"] -> "#{base_url}?tab=#{tab}"
       _ -> base_url
     end
   end

@@ -39,7 +39,12 @@
         to={"/messages?tab=followed_only"} 
         role="tab" 
         class={"tab flex-1", "tab-active": @selected_tab == "followed_only"}
-      >{l "Followed Only"}</LinkLive>
+      >{l "Followed only"}</LinkLive>
+      <LinkLive 
+        to={"/messages?tab=not_followed"} 
+        role="tab" 
+        class={"tab flex-1", "tab-active": @selected_tab == "not_followed"}
+      >{l "Other"}</LinkLive>
     </div>
   </div>
   {#if e(@threads, :edges, []) != []}

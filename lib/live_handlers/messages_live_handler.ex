@@ -151,6 +151,7 @@ defmodule Bonfire.Messages.LiveHandler do
     tab = opts[:tab] || "all"
     relationship_filter = case tab do
       "followed_only" -> :followed_only  # Show only messages from followed users
+      "not_followed" -> :not_followed  # Show messages from users not followed
       _ -> :all  # Show all messages
     end
 
