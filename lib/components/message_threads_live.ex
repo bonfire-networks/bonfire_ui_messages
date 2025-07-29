@@ -23,19 +23,20 @@ defmodule Bonfire.UI.Messages.MessageThreadsLive do
         "/messages/#{thread_id}"
       end
 
-    base_url = if thread_url && thread_id != object_id do
-      # e(assigns, :thread_level, nil) || 
-      thread_level =
-        length(e(replied, :path, []))
+    base_url =
+      if thread_url && thread_id != object_id do
+        # e(assigns, :thread_level, nil) || 
+        thread_level =
+          length(e(replied, :path, []))
 
-      if thread_level > 0 do
-        "#{thread_url}/reply/#{thread_level}/#{object_id}"
+        if thread_level > 0 do
+          "#{thread_url}/reply/#{thread_level}/#{object_id}"
+        else
+          "#{thread_url}/reply/#{object_id}"
+        end
       else
-        "#{thread_url}/reply/#{object_id}"
+        "/messages/#{object_id}"
       end
-    else
-      "/messages/#{object_id}"
-    end
 
     # Add tab parameter if provided and valid
     case tab do

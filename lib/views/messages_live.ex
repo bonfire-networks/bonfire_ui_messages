@@ -29,9 +29,10 @@ defmodule Bonfire.UI.Messages.MessagesLive do
 
     # Determine selected tab based on params and user's DM privacy setting
     selected_tab = determine_selected_tab(params, current_user)
-    
+
     threads =
-      ed(assigns(socket), :threads, nil) || LiveHandler.list_threads(current_user, socket, tab: selected_tab)
+      ed(assigns(socket), :threads, nil) ||
+        LiveHandler.list_threads(current_user, socket, tab: selected_tab)
 
     # |> debug("list_threads")
 
@@ -305,10 +306,10 @@ defmodule Bonfire.UI.Messages.MessagesLive do
   # show all my threads
   def handle_params(params, _url, socket) do
     current_user = current_user_required!(socket)
-    
+
     # Determine selected tab based on params and user's DM privacy setting
     selected_tab = determine_selected_tab(params, current_user)
-    
+
     # Always reload threads when tab changes
     threads = LiveHandler.list_threads(current_user, socket, tab: selected_tab)
 
@@ -333,16 +334,24 @@ defmodule Bonfire.UI.Messages.MessagesLive do
     case params["tab"] do
       nil ->
         # No explicit tab, use user's DM privacy setting to determine default
-        dm_privacy = Bonfire.Common.Settings.get([Bonfire.Messages, :dm_privacy], "everyone", 
-          current_user: current_user
-        )
+        dm_privacy =
+          Bonfire.Common.Settings.get([Bonfire.Messages, :dm_privacy], "everyone",
+            current_user: current_user
+          )
+
         case to_string(dm_privacy) do
           "followed_only" -> "followed_only"
           _ -> "all"
         end
-      "all" -> "all"
-      "followed_only" -> "followed_only"
-      explicit_tab -> explicit_tab
+
+      "all" ->
+        "all"
+
+      "followed_only" ->
+        "followed_only"
+
+      explicit_tab ->
+        explicit_tab
     end
   end
 

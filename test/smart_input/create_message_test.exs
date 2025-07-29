@@ -144,7 +144,7 @@ defmodule Bonfire.UI.Messages.CreateMessageTest do
     } do
       # Create another user that me doesn't follow
       unfollowed_user = fake_user!(account)
-      
+
       # Create messages from both users
       followed_content = "message from followed user"
       unfollowed_content = "message from unfollowed user"
@@ -154,7 +154,9 @@ defmodule Bonfire.UI.Messages.CreateMessageTest do
 
       # Send messages from both users
       {:ok, _op1} = Messages.send(recipient, %{post_content: %{html_body: followed_content}}, me)
-      {:ok, _op2} = Messages.send(unfollowed_user, %{post_content: %{html_body: unfollowed_content}}, me)
+
+      {:ok, _op2} =
+        Messages.send(unfollowed_user, %{post_content: %{html_body: unfollowed_content}}, me)
 
       conn
       |> visit("/messages?tab=followed_only")
@@ -169,19 +171,22 @@ defmodule Bonfire.UI.Messages.CreateMessageTest do
       account: account
     } do
       unfollowed_user = fake_user!(account)
-      
+
       followed_content = "message from followed user"
       unfollowed_content = "message from unfollowed user"
 
       {:ok, _follow} = Follows.follow(me, recipient)
       {:ok, _op1} = Messages.send(recipient, %{post_content: %{html_body: followed_content}}, me)
-      {:ok, _op2} = Messages.send(unfollowed_user, %{post_content: %{html_body: unfollowed_content}}, me)
+
+      {:ok, _op2} =
+        Messages.send(unfollowed_user, %{post_content: %{html_body: unfollowed_content}}, me)
 
       # Start with All tab - should see both messages
-      session = conn
-      |> visit("/messages?tab=all")
-      |> assert_has_or_open_browser("#message_threads", text: followed_content)
-      |> assert_has("#message_threads", text: unfollowed_content)
+      session =
+        conn
+        |> visit("/messages?tab=all")
+        |> assert_has_or_open_browser("#message_threads", text: followed_content)
+        |> assert_has("#message_threads", text: unfollowed_content)
 
       # Switch to Followed Only tab - should see only followed user's message
       session
@@ -204,18 +209,23 @@ defmodule Bonfire.UI.Messages.CreateMessageTest do
       account: account
     } do
       # Set user's DM privacy to followed_only
-      _updated_user = current_user(
-        Bonfire.Common.Settings.put([Bonfire.Messages, :dm_privacy], "followed_only", current_user: me)
-      )
+      _updated_user =
+        current_user(
+          Bonfire.Common.Settings.put([Bonfire.Messages, :dm_privacy], "followed_only",
+            current_user: me
+          )
+        )
 
       unfollowed_user = fake_user!(account)
-      
+
       followed_content = "message from followed user"
       unfollowed_content = "message from unfollowed user"
 
       {:ok, _follow} = Follows.follow(me, recipient)
       {:ok, _op1} = Messages.send(recipient, %{post_content: %{html_body: followed_content}}, me)
-      {:ok, _op2} = Messages.send(unfollowed_user, %{post_content: %{html_body: unfollowed_content}}, me)
+
+      {:ok, _op2} =
+        Messages.send(unfollowed_user, %{post_content: %{html_body: unfollowed_content}}, me)
 
       # Visit messages without explicit tab parameter - should default to followed_only
       conn
@@ -231,18 +241,23 @@ defmodule Bonfire.UI.Messages.CreateMessageTest do
       account: account
     } do
       # Set user's DM privacy to followed_only
-      _updated_user = current_user(
-        Bonfire.Common.Settings.put([Bonfire.Messages, :dm_privacy], "followed_only", current_user: me)
-      )
+      _updated_user =
+        current_user(
+          Bonfire.Common.Settings.put([Bonfire.Messages, :dm_privacy], "followed_only",
+            current_user: me
+          )
+        )
 
       unfollowed_user = fake_user!(account)
-      
+
       followed_content = "message from followed user"
       unfollowed_content = "message from unfollowed user"
 
       {:ok, _follow} = Follows.follow(me, recipient)
       {:ok, _op1} = Messages.send(recipient, %{post_content: %{html_body: followed_content}}, me)
-      {:ok, _op2} = Messages.send(unfollowed_user, %{post_content: %{html_body: unfollowed_content}}, me)
+
+      {:ok, _op2} =
+        Messages.send(unfollowed_user, %{post_content: %{html_body: unfollowed_content}}, me)
 
       # Explicitly visit All tab - should override the followed_only setting
       conn
@@ -260,13 +275,17 @@ defmodule Bonfire.UI.Messages.CreateMessageTest do
       account: account
     } do
       unfollowed_user = fake_user!(account)
-      
+
       followed_content = "message from followed user"
       unfollowed_content = "message from unfollowed user"
 
       {:ok, _follow} = Follows.follow(me, recipient)
-      {:ok, followed_op} = Messages.send(recipient, %{post_content: %{html_body: followed_content}}, me)
-      {:ok, _unfollowed_op} = Messages.send(unfollowed_user, %{post_content: %{html_body: unfollowed_content}}, me)
+
+      {:ok, followed_op} =
+        Messages.send(recipient, %{post_content: %{html_body: followed_content}}, me)
+
+      {:ok, _unfollowed_op} =
+        Messages.send(unfollowed_user, %{post_content: %{html_body: unfollowed_content}}, me)
 
       # Start from Followed Only tab and click into a thread
       conn

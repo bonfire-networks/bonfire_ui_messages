@@ -149,16 +149,23 @@ defmodule Bonfire.Messages.LiveHandler do
 
     # Handle tab-based filtering 
     tab = opts[:tab] || "all"
-    relationship_filter = case tab do
-      "followed_only" -> :followed_only  # Show only messages from followed users
-      "not_followed" -> :not_followed  # Show messages from users not followed
-      _ -> :all  # Show all messages
-    end
 
-    opts = opts
-    |> Keyword.put(:relationship_filter, relationship_filter)
-    |> Keyword.put(:show_filtered, false)  # We're not using show_filtered anymore
-    
+    relationship_filter =
+      case tab do
+        # Show only messages from followed users
+        "followed_only" -> :followed_only
+        # Show messages from users not followed
+        "not_followed" -> :not_followed
+        # Show all messages
+        _ -> :all
+      end
+
+    opts =
+      opts
+      |> Keyword.put(:relationship_filter, relationship_filter)
+      # We're not using show_filtered anymore
+      |> Keyword.put(:show_filtered, false)
+
     # IO.inspect({:tab, tab, :filter, relationship_filter}, label: "TAB_AND_FILTER")
 
     if current_user,

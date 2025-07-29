@@ -4,7 +4,7 @@
 }>
   <div class="sticky top-0 bg-base-100 z-[9999999999] pt-safe">
     <div class="min-h-[50px] border-b border-base-content/10 flex justify-between items-center px-3">
-       <label for="sidebar-drawer" class="xl:hidden mr-3 btn btn-circle btn-ghost btn-sm">
+      <label for="sidebar-drawer" class="xl:hidden mr-3 btn btn-circle btn-ghost btn-sm">
         {#if is_map(current_user(@__context__))}
           <Bonfire.UI.Common.AvatarLive
             bg_class="rounded-full"
@@ -25,26 +25,26 @@
         />
       </div>
     </div>
-     <div class="p-2">
-        <Bonfire.UI.Messages.NewDmLive />
-      </div>
+    <div class="p-2">
+      <Bonfire.UI.Messages.NewDmLive />
+    </div>
     <!-- Message Tabs -->
     <div role="tablist" class="tabs border-b border-base-content/20 w-full tabs-border">
-      <LinkLive 
-        to={"/messages?tab=all"} 
-        role="tab" 
+      <LinkLive
+        to="/messages?tab=all"
+        role="tab"
         class={"tab flex-1", "tab-active": (@selected_tab || "all") == "all"}
-      >{l "All"}</LinkLive>
-      <LinkLive 
-        to={"/messages?tab=followed_only"} 
-        role="tab" 
+      >{l("All")}</LinkLive>
+      <LinkLive
+        to="/messages?tab=followed_only"
+        role="tab"
         class={"tab flex-1", "tab-active": @selected_tab == "followed_only"}
-      >{l "Followed only"}</LinkLive>
-      <LinkLive 
-        to={"/messages?tab=not_followed"} 
-        role="tab" 
+      >{l("Followed only")}</LinkLive>
+      <LinkLive
+        to="/messages?tab=not_followed"
+        role="tab"
         class={"tab flex-1", "tab-active": @selected_tab == "not_followed"}
-      >{l "Other"}</LinkLive>
+      >{l("Other")}</LinkLive>
     </div>
   </div>
   {#if e(@threads, :edges, []) != []}
@@ -63,7 +63,11 @@
         :for={%{activity: activity} <- e(@threads, :edges, [])}
       >
         <LinkPatchLive
-          to={permalink(e(activity, :replied, nil), e(activity, :object, nil) || e(activity, :object_id, nil), @selected_tab)}
+          to={permalink(
+            e(activity, :replied, nil),
+            e(activity, :object, nil) || e(activity, :object_id, nil),
+            @selected_tab
+          )}
           class="block"
         >
           <div class="relative w-full indicator">
