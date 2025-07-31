@@ -6,13 +6,13 @@ defmodule Bonfire.UI.Messages.MessagesLive do
   import Untangle
 
   declare_extension("UI for messages",
-    icon: "mingcute:inbox-2-fill",
+    icon: "ph:tray-duotone",
     emoji: "✉️",
     description: l("User interface for writing and reading private messages.")
   )
 
   declare_nav_link(l("Direct Messages"),
-    icon: "mingcute:inbox-2-fill",
+    icon: "ph:tray-duotone",
     page: "messages",
     badge: [
       id: :inbox,
