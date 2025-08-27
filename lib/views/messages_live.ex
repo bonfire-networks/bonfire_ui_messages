@@ -70,6 +70,7 @@ defmodule Bonfire.UI.Messages.MessagesLive do
         feed_id: feed_id,
         activity: nil,
         object: nil,
+        include_path_ids: nil,
         tab_id: nil,
         #  reply_to_id: nil,
         thread_id: nil,
