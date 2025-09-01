@@ -8,6 +8,7 @@
         {#if is_map(current_user(@__context__))}
           <Bonfire.UI.Common.AvatarLive
             bg_class="rounded-full"
+            wrapper_class="border-0 avatar !flex w-6 h-6"
             class="inline-block object-cover w-full cursor-pointer rounded-full"
             src={Media.avatar_url(current_user(@__context__))}
             user_id={current_user_id(@__context__)}
