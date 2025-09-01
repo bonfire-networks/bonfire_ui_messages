@@ -2,7 +2,7 @@
   "flex-1 w-full md:w-[390px] md:max-w-[390px] md:border-r border-base-content/10 max-h-[100vh] overflow-y-auto",
   "!hidden md:!block": e(@thread_active, false)
 }>
-  <div class="sticky top-0 bg-base-100 z-[9999999999] pt-safe">
+  <div class="sticky top-0 bg-base-100 z-50 pt-safe">
     <div class="min-h-[50px] border-b border-base-content/10 flex justify-between items-center px-3">
       <label for="sidebar-drawer" class="xl:hidden mr-3 btn btn-circle btn-ghost btn-sm">
         {#if is_map(current_user(@__context__))}
