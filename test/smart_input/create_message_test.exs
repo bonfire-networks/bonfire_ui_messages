@@ -65,21 +65,15 @@ defmodule Bonfire.UI.Messages.CreateMessageTest do
   test "does not show up on my profile timeline", %{conn: conn, me: me, recipient: recipient} do
     content = "here is an epic html message"
 
-    session = visit(conn, "/settings")
+    attrs = %{
+      post_content: %{
+        html_body: content
+      }
+    }
 
-    {:ok, view, _html} = live(conn, "/settings")
-    live_async_wait(view)
+    {:ok, _message} = Messages.send(me, attrs, recipient)
 
-    assert sent =
-             view
-             |> form("#smart_input form")
-             |> render_submit(%{
-               "create_object_type" => "message",
-               "to_circles" => [id(recipient)],
-               "post" => %{"post_content" => %{"html_body" => content}}
-             })
-
-    session
+    conn
     |> visit("/user")
     |> refute_has("[data-id=feed]", text: content)
   end
@@ -190,7 +184,7 @@ defmodule Bonfire.UI.Messages.CreateMessageTest do
 
       # Switch to Followed Only tab - should see only followed user's message
       session
-      |> click_link("Followed Only")
+      |> click_link("Followed only")
       |> assert_has_or_open_browser("#message_threads", text: followed_content)
       |> refute_has("#message_threads", text: unfollowed_content)
 
