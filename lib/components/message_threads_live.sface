@@ -49,11 +49,11 @@
     </div>
   </div>
   {#if e(@threads, :edges, []) != []}
-    <!-- <Bonfire.UI.Common.LoadPreviousLive
+    {!-- <Bonfire.UI.Common.LoadPreviousLive
       live_handler={Bonfire.Messages}
       page_info={e(@threads, :page_info, nil)}
       context={@context}
-    /> -->
+    /> --}
 
     <ul id="message_threads" class="flex flex-col divide-y divide-base-content/10">
       <li
