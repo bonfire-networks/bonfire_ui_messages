@@ -1,5 +1,5 @@
 defmodule Bonfire.UI.Messages.CreateMessageTest do
-  use Bonfire.UI.Messages.ConnCase, async: true
+  use Bonfire.UI.Messages.ConnCase, async: System.get_env("TEST_UI_ASYNC") != "no"
   use Bonfire.Common.Utils
   import Bonfire.Files.Simulation
 
