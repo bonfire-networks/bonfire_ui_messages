@@ -30,21 +30,21 @@
       <Bonfire.UI.Messages.NewDmLive />
     </div>
     <!-- Message Tabs -->
-    <div role="tablist" class="tabs border-b border-base-content/20 w-full tabs-border">
+    <div role="tablist" class="px-2 gap-2 py-2 flex">
       <LinkLive
         to="/messages?tab=all"
         role="tab"
-        class={["tab flex-1", "tab-active": (@selected_tab || "all") == "all"]}
+        class={["btn btn-outline border-base-content/20 rounded-full", "btn-active": (@selected_tab || "all") == "all"]}
       >{l("All")}</LinkLive>
       <LinkLive
         to="/messages?tab=followed_only"
         role="tab"
-        class={["tab flex-1", "tab-active": @selected_tab == "followed_only"]}
+        class={["btn btn-outline border-base-content/20 rounded-full", "btn-active": @selected_tab == "followed_only"]}
       >{l("Followed only")}</LinkLive>
       <LinkLive
         to="/messages?tab=not_followed"
         role="tab"
-        class={["tab flex-1", "tab-active": @selected_tab == "not_followed"]}
+        class={["btn btn-outline border-base-content/20 rounded-full", "btn-active": @selected_tab == "not_followed"]}
       >{l("Other")}</LinkLive>
     </div>
   </div>
