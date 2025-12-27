@@ -34,17 +34,26 @@
       <LinkLive
         to="/messages?tab=all"
         role="tab"
-        class={["btn btn-outline border-base-content/20 rounded-full", "btn-active": (@selected_tab || "all") == "all"]}
+        class={[
+          "btn btn-outline border-base-content/20 rounded-full",
+          "btn-active": (@selected_tab || "all") == "all"
+        ]}
       >{l("All")}</LinkLive>
       <LinkLive
         to="/messages?tab=followed_only"
         role="tab"
-        class={["btn btn-outline border-base-content/20 rounded-full", "btn-active": @selected_tab == "followed_only"]}
+        class={[
+          "btn btn-outline border-base-content/20 rounded-full",
+          "btn-active": @selected_tab == "followed_only"
+        ]}
       >{l("Followed only")}</LinkLive>
       <LinkLive
         to="/messages?tab=not_followed"
         role="tab"
-        class={["btn btn-outline border-base-content/20 rounded-full", "btn-active": @selected_tab == "not_followed"]}
+        class={[
+          "btn btn-outline border-base-content/20 rounded-full",
+          "btn-active": @selected_tab == "not_followed"
+        ]}
       >{l("Other")}</LinkLive>
     </div>
   </div>
