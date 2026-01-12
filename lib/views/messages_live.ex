@@ -27,12 +27,12 @@ defmodule Bonfire.UI.Messages.MessagesLive do
     # feed_id = Bonfire.Social.Feeds.my_feed_id(feed_id, socket)
     current_user = current_user_required!(socket)
 
-    # Determine selected tab based on params and user's DM privacy setting
-    selected_tab = determine_selected_tab(params, current_user)
+    # Determine filter tab based on params and user's DM privacy setting
+    filter_tab = determine_filter_tab(params, current_user)
 
     threads =
       ed(assigns(socket), :threads, nil) ||
-        LiveHandler.list_threads(current_user, socket, tab: selected_tab)
+        LiveHandler.list_threads(current_user, socket, tab: filter_tab)
 
     # |> debug("list_threads")
 
@@ -78,7 +78,8 @@ defmodule Bonfire.UI.Messages.MessagesLive do
         thread_mode: maybe_to_atom(e(params, "mode", nil)),
         feedback_title: l("No messages"),
         feedback_message: l("Select a thread or start a new one..."),
-        selected_tab: selected_tab,
+        selected_tab: "messages",
+        filter_tab: filter_tab,
         page_header_aside: [
           {Bonfire.UI.Messages.HeaderAsideDmLive, [feed_id: feed_id]}
         ]
@@ -101,7 +102,7 @@ defmodule Bonfire.UI.Messages.MessagesLive do
 
     current_user = current_user_required!(socket)
     current_username = e(current_user, :character, :username, nil)
-    selected_tab = determine_selected_tab(params, current_user)
+    filter_tab = determine_filter_tab(params, current_user)
 
     user =
       case username do
@@ -140,7 +141,7 @@ defmodule Bonfire.UI.Messages.MessagesLive do
          #  smart_input: true,
          tab_id: "compose",
          feed_title: l("Messages"),
-         selected_tab: selected_tab,
+         filter_tab: filter_tab,
          # the user to display
          user: user
          #  reply_to_id: nil,
@@ -190,7 +191,7 @@ defmodule Bonfire.UI.Messages.MessagesLive do
       # show a message thread
 
       current_user = current_user_required!(socket)
-      selected_tab = determine_selected_tab(params, current_user)
+      filter_tab = determine_filter_tab(params, current_user)
 
       # Bonfire.Social.Objects.LiveHandler.default_preloads()
       preloads = [
@@ -273,7 +274,7 @@ defmodule Bonfire.UI.Messages.MessagesLive do
               ),
             participants: participants,
             participants_names: participants_names,
-            selected_tab: selected_tab,
+            filter_tab: filter_tab,
             # to_circles: to_circles || [],
             page_header_aside: [],
             sidebar_widgets: [
@@ -308,13 +309,13 @@ defmodule Bonfire.UI.Messages.MessagesLive do
   def handle_params(params, _url, socket) do
     current_user = current_user_required!(socket)
 
-    # Determine selected tab based on params and user's DM privacy setting
-    selected_tab = determine_selected_tab(params, current_user)
+    # Determine filter tab based on params and user's DM privacy setting
+    filter_tab = determine_filter_tab(params, current_user)
 
     # Always reload threads when tab changes
-    threads = LiveHandler.list_threads(current_user, socket, tab: selected_tab)
+    threads = LiveHandler.list_threads(current_user, socket, tab: filter_tab)
 
-    # |> debug("list_threads with tab: #{selected_tab}")
+    # |> debug("list_threads with tab: #{filter_tab}")
 
     {
       :noreply,
@@ -323,15 +324,15 @@ defmodule Bonfire.UI.Messages.MessagesLive do
         threads: threads,
         page_title: l("Direct Messages"),
         thread_active: false,
-        selected_tab: selected_tab,
+        filter_tab: filter_tab,
         # to_boundaries: [{"message", "Message"}],
         tab_id: nil
       )
     }
   end
 
-  # Helper function to determine selected tab based on params and user settings
-  defp determine_selected_tab(params, current_user) do
+  # Helper function to determine filter tab based on params and user settings
+  defp determine_filter_tab(params, current_user) do
     case params["tab"] do
       nil ->
         # No explicit tab, use user's DM privacy setting to determine default

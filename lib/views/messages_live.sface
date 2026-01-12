@@ -5,7 +5,7 @@
     threads={@threads}
     thread_id={@thread_id}
     thread_active={e(@thread_active, false)}
-    selected_tab={@selected_tab}
+    filter_tab={@filter_tab}
   />
 
   <div class={
@@ -15,10 +15,10 @@
   }>
     {#if @tab_id == "thread"}
       <div class="pt-safe z-[9999999] bg-base-100 sticky top-0">
-        <div class="min-h-[50px] border-b border-base-content/10 flex items-center px-4">
+        <div class="min-h-[50px] border-b border-base-content/20 flex items-center px-4">
           <div class="flex items-center gap-3 min-w-0 flex-1">
             <span class="md:hidden flex-none">
-              <Bonfire.UI.Common.BackButtonLive back={case @selected_tab do
+              <Bonfire.UI.Common.BackButtonLive back={case @filter_tab do
                 "followed_only" -> "/messages?tab=followed_only"
                 "not_followed" -> "/messages?tab=not_followed"
                 _ -> "/messages?tab=all"
@@ -63,7 +63,7 @@
       </div>
       {!-- <form   
       phx-update="ignore"
-      phx-submit="send_message" class="z-[9999999] gap-4 bg-base-100 sticky bottom-0 border-t border-base-content/10 flex items-center py-2 px-4">
+      phx-submit="send_message" class="z-[9999999] gap-4 bg-base-100 sticky bottom-0 border-t border-base-content/20 flex items-center py-2 px-4">
       <div>
         <#Icon iconify="ri:emotion-happy-line" class="w-5 h-5 text-base-content/50" />
       </div> 

@@ -1,9 +1,9 @@
 <div class={[
-  "flex-1 w-full md:w-[390px] md:max-w-[390px] md:border-r border-base-content/10 max-h-[100vh] overflow-y-auto overflow-x-hidden",
+  "flex-1 w-full md:w-[390px] md:max-w-[390px] md:border-r border-base-content/20 max-h-[100vh] overflow-y-auto overflow-x-hidden",
   "!hidden md:!block": e(@thread_active, false)
 ]}>
   <div class="sticky top-0 bg-base-100 z-50 pt-safe">
-    <div class="min-h-[50px] border-b border-base-content/10 flex justify-between items-center px-3">
+    <div class="min-h-[50px] border-b border-base-content/20 flex justify-between items-center px-3">
       <label for="sidebar-drawer" class="xl:hidden mr-3 btn btn-circle btn-ghost btn-sm">
         {#if is_map(current_user(@__context__))}
           <Bonfire.UI.Common.AvatarLive
@@ -36,7 +36,7 @@
         role="tab"
         class={[
           "btn btn-outline border-base-content/20 rounded-full",
-          "btn-active": (@selected_tab || "all") == "all"
+          "btn-active": (@filter_tab || "all") == "all"
         ]}
       >{l("All")}</LinkLive>
       <LinkLive
@@ -44,7 +44,7 @@
         role="tab"
         class={[
           "btn btn-outline border-base-content/20 rounded-full",
-          "btn-active": @selected_tab == "followed_only"
+          "btn-active": @filter_tab == "followed_only"
         ]}
       >{l("Followed only")}</LinkLive>
       <LinkLive
@@ -52,7 +52,7 @@
         role="tab"
         class={[
           "btn btn-outline border-base-content/20 rounded-full",
-          "btn-active": @selected_tab == "not_followed"
+          "btn-active": @filter_tab == "not_followed"
         ]}
       >{l("Other")}</LinkLive>
     </div>
@@ -76,7 +76,7 @@
           to={permalink(
             e(activity, :replied, nil),
             e(activity, :object, nil) || e(activity, :object_id, nil),
-            @selected_tab
+            @filter_tab
           )}
           class="block"
         >

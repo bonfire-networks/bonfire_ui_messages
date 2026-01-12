@@ -8,7 +8,7 @@ defmodule Bonfire.UI.Messages.MessageThreadsLive do
   prop context, :any, default: nil
   prop showing_within, :atom, default: nil
   prop thread_active, :boolean, default: false
-  prop selected_tab, :string, default: "all"
+  prop filter_tab, :string, default: "all"
 
   def permalink(replied, object) do
     permalink(replied, object, nil)
