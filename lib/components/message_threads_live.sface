@@ -94,14 +94,20 @@
                       data-id="thread_participants"
                       class="flex-1 max-w-[320px] text-sm font-semibold truncate text-base-content"
                     >
-                      {!-- FIXME: do not look this up on render --}
-                      {#case {LiveHandler.thread_meta(:title, e(activity, :replied, :thread_id, nil), activity, nil,
-                           current_user: current_user(@__context__)
-                         ), e(activity, :replied, :thread, :named, :name, nil)}}
-                        {#match {participant_names, nil}}
-                          {participant_names}
-                        {#match {participant_names, thread_name}}
-                          {participant_names}:
+                      {!-- Display thread participants from preloaded data instead of querying per-thread --}
+                      {#case e(activity, :replied, :thread, :named, :name, nil)}
+                        {#match nil}
+                          {!-- No thread name, show participants from preloaded data --}
+                          {e(activity, :thread_participants_names, nil) ||
+                            e(activity, :subject, :profile, :name, nil) ||
+                            e(activity, :subject, :character, :username, nil) ||
+                            l("Someone")}
+                        {#match thread_name}
+                          {!-- Has thread name, show both --}
+                          {e(activity, :thread_participants_names, nil) ||
+                            e(activity, :subject, :profile, :name, nil) ||
+                            e(activity, :subject, :character, :username, nil) ||
+                            l("Someone")}:
                           <span class="text-base-content/70">{thread_name}</span>
                       {/case}
                     </div>
