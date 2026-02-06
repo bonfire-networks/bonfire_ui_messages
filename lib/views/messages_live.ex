@@ -55,7 +55,6 @@ defmodule Bonfire.UI.Messages.MessagesLive do
       :ok,
       socket
       |> assign(
-        nav_items: Bonfire.Common.ExtensionModule.default_nav(),
         showing_within: :messages,
         back: true,
         threads: threads,
