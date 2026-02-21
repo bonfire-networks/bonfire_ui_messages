@@ -15,6 +15,26 @@ defmodule Bonfire.UI.Messages.MessageThreadsLive do
   end
 
   def permalink(replied, object, tab) do
+    if mls_encrypted?(e(object, :post_content, :html_body, nil)) do
+      # Encrypted MLS message — link to ap-mls:// deep link using the message's canonical URL
+      case canonical_url(object) do
+        "http" <> _ = url -> String.replace(url, ~r/^https?:\/\//, "ap-mls://")
+        _ -> default_permalink(replied, object, tab)
+      end
+    else
+      default_permalink(replied, object, tab)
+    end
+  end
+
+  defp mls_encrypted?(body) when is_binary(body) do
+    # TODO: actually store an indicator of MLS encryption in the message DB instead of relying on this heuristic
+    clean = String.trim(body)
+    byte_size(clean) > 64 and Regex.match?(~r/\A[A-Za-z0-9+\/=]+\z/, clean)
+  end
+
+  defp mls_encrypted?(_), do: false
+
+  defp default_permalink(replied, object, tab) do
     thread_id = e(replied, :thread_id, nil)
     object_id = id(object)
 
@@ -25,7 +45,7 @@ defmodule Bonfire.UI.Messages.MessageThreadsLive do
 
     base_url =
       if thread_url && thread_id != object_id do
-        # e(assigns, :thread_level, nil) || 
+        # e(assigns, :thread_level, nil) ||
         thread_level =
           length(e(replied, :path, []))
 
