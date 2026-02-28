@@ -25,7 +25,7 @@ defmodule Bonfire.UI.Messages.ConnCase do
 
       import Bonfire.UI.Common.Testing.Helpers
 
-      import Phoenix.LiveViewTest
+      import Phoenix.LiveViewTest, except: [open_browser: 1, open_browser: 2]
       import Surface.LiveViewTest
       # import Bonfire.UI.Messages.ConnCase
       import Bonfire.UI.Messages.Test.ConnHelpers
