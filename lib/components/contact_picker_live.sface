@@ -88,6 +88,18 @@
               </div>
             </button>
           {/for}
+
+          {!-- Infinite scroll for suggested users (not search results) --}
+          {#if String.length(@search_text || "") < 2}
+            <Bonfire.UI.Common.LoadMoreLive
+              live_handler="Bonfire.Messages"
+              page_info={e(@suggested_users, :page_info, nil)}
+              context="contacts"
+              target={@myself}
+              infinite_scroll={true}
+              hide_if_no_more={true}
+            />
+          {/if}
         {#else}
           <div class="flex flex-col items-center gap-2 py-8 text-center px-6">
             <p class="text-sm text-base-content/50">{empty_message}</p>

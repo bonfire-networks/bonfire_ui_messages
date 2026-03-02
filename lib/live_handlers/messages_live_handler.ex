@@ -10,6 +10,10 @@ defmodule Bonfire.Messages.LiveHandler do
     live_more(context, [before: cursor], socket)
   end
 
+  def handle_event("load_more", %{"context" => "contacts"} = attrs, socket) do
+    load_more_contacts(attrs, socket)
+  end
+
   def handle_event("load_more", attrs, socket) do
     current_user = current_user(socket)
 
@@ -47,9 +51,47 @@ defmodule Bonfire.Messages.LiveHandler do
     end
   end
 
+  def handle_event("preload_more", %{"context" => "contacts"} = attrs, socket) do
+    load_more_contacts(attrs, socket)
+  end
+
   def handle_event("preload_more", attrs, socket) do
     # Same as load_more but for infinite scroll preloading
     handle_event("load_more", attrs, socket)
+  end
+
+  defp load_more_contacts(attrs, socket) do
+    # NOTE: When called via LiveHandler dispatch with target={@myself} on the ContactPickerLive
+    # component, the socket here IS the component's socket (has suggested_users assign)
+    current_user = current_user(socket)
+
+    if is_nil(current_user) do
+      {:noreply, socket}
+    else
+      pagination = input_to_atoms(attrs)
+
+      result =
+        Bonfire.Social.Graph.Follows.list_my_followed(current_user,
+          type: Bonfire.Data.Identity.User,
+          limit: 20,
+          pagination: pagination
+        )
+
+      new_edges =
+        result
+        |> e(:edges, result)
+        |> Enum.map(&e(&1, :edge, :object, nil))
+        |> Enum.reject(&is_nil/1)
+
+      current = e(assigns(socket), :suggested_users, %{edges: [], page_info: nil})
+
+      updated = %{
+        edges: e(current, :edges, []) ++ new_edges,
+        page_info: e(result, :page_info, nil)
+      }
+
+      {:noreply, assign(socket, suggested_users: updated)}
+    end
   end
 
   def handle_event("search_threads", %{"search" => search_term}, socket) do

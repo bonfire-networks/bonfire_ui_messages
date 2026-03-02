@@ -31,25 +31,33 @@ defmodule Bonfire.UI.Messages.ContactPickerLive do
 
     suggested =
       if current_user do
-        Bonfire.Social.Graph.Follows.list_my_followed(current_user,
-          paginate: false,
-          type: Bonfire.Data.Identity.User,
-          limit: 30
-        )
-        |> Enum.map(&e(&1, :edge, :object, nil))
-        |> Enum.reject(&is_nil/1)
+        result =
+          Bonfire.Social.Graph.Follows.list_my_followed(current_user,
+            type: Bonfire.Data.Identity.User,
+            limit: 20
+          )
+
+        edges =
+          result
+          |> e(:edges, result)
+          |> Enum.map(&e(&1, :edge, :object, nil))
+          |> Enum.reject(&is_nil/1)
+
+        %{edges: edges, page_info: e(result, :page_info, nil)}
       else
-        []
+        %{edges: [], page_info: nil}
       end
 
     assign(socket, suggested_users: suggested)
   end
 
+  @doc "Returns {users, section_label, empty_message} based on current search state"
   def display_contacts(search_text, search_results, suggested_users) do
     if String.length(search_text || "") >= 2 do
       {search_results, l("Results"), l("No people found")}
     else
-      {suggested_users || [], l("Suggested"), l("Search for people to start a conversation")}
+      {e(suggested_users, :edges, []), l("Suggested"),
+       l("Search for people to start a conversation")}
     end
   end
 
