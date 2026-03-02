@@ -1,0 +1,44 @@
+<div class="flex flex-col h-full">
+  {!-- Header --}
+  <div class="pt-safe z-sticky bg-base-100 sticky top-0">
+    <div class="min-h-[60px] shadow-lg flex items-center px-4">
+      <div class="flex items-center gap-3 min-w-0 flex-1">
+        <span class="md:hidden flex-none">
+          <Bonfire.UI.Common.BackButtonLive back={Bonfire.UI.Messages.MessageThreadsLive.messages_back_url(@filter_tab)} />
+        </span>
+        {#if length(@recipients) >= 2}
+          <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-none">
+            <#Icon iconify="ph:users-duotone" class="w-4 h-4 text-primary" />
+          </div>
+        {#else}
+          {#if @compose_user}
+            <Bonfire.UI.Common.AvatarLive
+              wrapper_class="border-0 avatar !flex w-8 h-8 flex-none"
+              class="w-8 h-8 rounded-full object-cover"
+              src={Media.avatar_url(@compose_user)}
+              user_id={id(@compose_user)}
+            />
+          {/if}
+        {/if}
+        <h3 class="font-semibold text-sm truncate flex-1">
+          {recipient_names(@recipients, @compose_user)}
+        </h3>
+      </div>
+    </div>
+  </div>
+
+  {!-- Empty state --}
+  <div class="flex flex-1 items-center justify-center">
+    <div class="text-center px-6">
+      <div class="w-16 h-16 rounded-full bg-base-content/5 flex items-center justify-center mb-4 mx-auto">
+        <#Icon iconify="ph:tray-duotone" class="w-8 h-8 text-base-content/30" />
+      </div>
+      {#if recipient_names(@recipients, @compose_user)}
+        <p class="text-base-content/50 text-sm">
+          {l("Start a conversation with %{name}", name: recipient_names(@recipients, @compose_user))}
+        </p>
+      {/if}
+    </div>
+  </div>
+
+</div>

@@ -1,11 +1,7 @@
-<Bonfire.UI.Common.SmartInputButtonLive
-  class="btn w-full btn-primary"
-  showing_within={:messages}
-  icon_class="!w-5 !h-5"
-  prompt={l("New message")}
-  smart_input_opts={%{
-    recipients_editable: true,
-    create_object_type: "message",
-    clear_reply_data: true
-  }}
-/>
+<button
+  phx-click="Bonfire.Messages:toggle_contact_picker"
+  class="btn btn-ghost !btn-sm"
+  aria-label={l("New message")}
+>
+  <#Icon iconify="tabler:mail-plus" class="w-5 h-5" />
+</button>

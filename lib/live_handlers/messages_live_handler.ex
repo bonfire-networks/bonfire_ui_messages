@@ -22,6 +22,7 @@ defmodule Bonfire.Messages.LiveHandler do
         # Load just the next page of threads
         new_threads =
           Messages.list(current_user, nil, [latest_in_threads: true] ++ [pagination: pagination])
+          |> enrich_threads_with_participants(current_user)
 
         # Get current threads from socket assigns
         current_threads = e(assigns(socket), :threads, %{edges: [], page_info: %{}})
@@ -51,6 +52,53 @@ defmodule Bonfire.Messages.LiveHandler do
     handle_event("load_more", attrs, socket)
   end
 
+  def handle_event("search_threads", %{"search" => search_term}, socket) do
+    search_term = String.trim(search_term)
+    search_term = if search_term == "", do: nil, else: search_term
+    {:noreply, assign(socket, search_term: search_term)}
+  end
+
+  def handle_event("toggle_contact_picker", _params, socket) do
+    composing_new = !e(assigns(socket), :composing_new, false)
+
+    {:noreply,
+     assign(socket,
+       composing_new: composing_new,
+       selected_recipients: []
+     )}
+  end
+
+  def handle_event("toggle_recipient", %{"id" => id, "name" => name}, socket) do
+    selected = e(assigns(socket), :selected_recipients, [])
+
+    updated =
+      if Enum.any?(selected, fn {rid, _} -> rid == id end) do
+        Enum.reject(selected, fn {rid, _} -> rid == id end)
+      else
+        [{id, name} | selected]
+      end
+
+    {:noreply, assign(socket, selected_recipients: updated)}
+  end
+
+  def handle_event("start_direct_message", _params, socket) do
+    selected = e(assigns(socket), :selected_recipients, [])
+
+    open_dm_composer(selected, socket)
+
+    {:noreply,
+     socket
+     |> assign(
+       composing_new: false,
+       tab_id: "new_conversation",
+       thread_active: true
+     )}
+  end
+
+  def handle_event("send_new_conversation", params, socket) do
+    send_message(params, socket)
+  end
+
   def handle_event("send", params, socket) do
     send_message(params, socket)
   end
@@ -72,12 +120,38 @@ defmodule Bonfire.Messages.LiveHandler do
       [{name, id} | e(assigns(socket), :to_circles, [])]
       |> Enum.uniq()
 
-    # |> debug()
     {:noreply, assign(socket, to_circles: to_circles)}
   end
 
+  @doc "Opens the portal SmartInput configured for DM composition with the given recipients."
+  def open_dm_composer(to_circles, socket) do
+    Bonfire.UI.Common.SmartInput.LiveHandler.open_with_text_suggestion(
+      "",
+      [
+        to_boundaries: [{"message", l("Message")}],
+        smart_input_opts: %{
+          create_object_type: :message,
+          recipients_editable: false,
+          to_circles: to_circles
+        }
+      ],
+      socket
+    )
+
+    # Also update PersistentLive's socket so @to_circles flows through the template
+    persistent_pid = e(assigns(socket), :__context__, :child_pid, nil)
+
+    if persistent_pid do
+      send(
+        persistent_pid,
+        {:assign_persistent_self,
+         %{to_circles: to_circles, to_boundaries: [{"message", l("Message")}]}}
+      )
+    end
+  end
+
   def live_more(context, opts, socket) do
-    IO.inspect(opts, label: "paginate threads")
+    debug(opts, "paginate threads")
     current_user = current_user(socket)
 
     if is_nil(current_user) do
@@ -87,6 +161,7 @@ defmodule Bonfire.Messages.LiveHandler do
         # Load just the next page of threads
         new_threads =
           Messages.list(current_user, context, [latest_in_threads: true] ++ List.wrap(opts))
+          |> enrich_threads_with_participants(current_user)
 
         # Get current threads from widget or socket assigns
         current_threads = e(assigns(socket), :threads, %{edges: [], page_info: %{}})
@@ -168,15 +243,15 @@ defmodule Bonfire.Messages.LiveHandler do
 
     # IO.inspect({:tab, tab, :filter, relationship_filter}, label: "TAB_AND_FILTER")
 
-    if current_user,
-      do:
-        Messages.list(
-          current_user,
-          user,
-          [latest_in_threads: true, limit: default_limit] ++ List.wrap(opts)
-        )
-        # |> debug()
-        |> repo().maybe_preload(activity: [replied: [thread: :named]])
+    if current_user do
+      Messages.list(
+        current_user,
+        user,
+        [latest_in_threads: true, limit: default_limit] ++ List.wrap(opts)
+      )
+      |> repo().maybe_preload(activity: [replied: [thread: :named]])
+      |> enrich_threads_with_participants(current_user)
+    end
   end
 
   def thread_participants(thread_id, activity, object, opts) do
@@ -266,13 +341,62 @@ defmodule Bonfire.Messages.LiveHandler do
      |> assign_flash(:info, l("Sent!"))}
   end
 
-  defp message_sent(_sent, _attrs, socket) do
+  defp message_sent(sent, _attrs, socket) do
+    thread_id = e(sent, :replied, :thread_id, nil) || uid(sent)
+
     {
       :noreply,
       socket
       |> Bonfire.UI.Common.SmartInput.LiveHandler.reset_input()
       |> assign_flash(:info, l("Sent!"))
-      #  |> redirect_to("/messages/#{e(sent, :replied, :thread_id, nil) || uid(sent)}##{uid(sent)}")
+      |> push_patch(to: "/messages/#{thread_id}")
     }
+  end
+
+  defp enrich_threads_with_participants(threads, current_user) do
+    current_user_id = id(current_user)
+
+    edges =
+      Enum.map(e(threads, :edges, []), fn %{activity: activity} = edge ->
+        thread_id = e(activity, :replied, :thread_id, nil)
+
+        participants =
+          if thread_id do
+            Bonfire.Social.Threads.list_participants(
+              activity,
+              thread_id,
+              current_user: current_user,
+              skip_boundary_check: true,
+              limit: 5
+            )
+            |> List.wrap()
+          else
+            [e(activity, :subject, nil)] |> Enum.reject(&is_nil/1)
+          end
+
+        other_participants = Enum.reject(participants, &(id(&1) == current_user_id))
+
+        names =
+          case other_participants do
+            [] ->
+              nil
+
+            others ->
+              Enum.map_join(others, " & ", fn p ->
+                e(p, :profile, :name, nil) ||
+                  e(p, :character, :username, nil) ||
+                  l("someone")
+              end)
+          end
+
+        activity =
+          activity
+          |> Map.put(:thread_participants, other_participants)
+          |> Map.put(:thread_participants_names, names)
+
+        %{edge | activity: activity}
+      end)
+
+    Map.put(threads, :edges, edges)
   end
 end

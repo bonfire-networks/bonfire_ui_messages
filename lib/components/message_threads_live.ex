@@ -9,6 +9,54 @@ defmodule Bonfire.UI.Messages.MessageThreadsLive do
   prop showing_within, :atom, default: nil
   prop thread_active, :boolean, default: false
   prop filter_tab, :string, default: "all"
+  prop search_term, :string, default: nil
+  prop composing_new, :boolean, default: false
+  prop selected_recipients, :list, default: []
+
+  def filter_threads(edges, nil), do: edges
+  def filter_threads(edges, ""), do: edges
+
+  def filter_threads(edges, search_term) do
+    term = String.downcase(search_term)
+
+    Enum.filter(edges, fn %{activity: activity} ->
+      names = e(activity, :thread_participants_names, "") || ""
+      thread_name = e(activity, :replied, :thread, :named, :name, "") || ""
+      subject_name = e(activity, :subject, :profile, :name, "") || ""
+
+      preview =
+        e(activity, :object, :post_content, :name, "") ||
+          e(activity, :object, :post_content, :summary, "") ||
+          e(activity, :object, :post_content, :html_body, "") || ""
+
+      String.contains?(String.downcase(names), term) ||
+        String.contains?(String.downcase(thread_name), term) ||
+        String.contains?(String.downcase(subject_name), term) ||
+        String.contains?(String.downcase(preview), term)
+    end)
+  end
+
+  @group_colors ~w(
+    bg-red-400 bg-orange-400 bg-amber-400 bg-yellow-400
+    bg-lime-400 bg-green-400 bg-emerald-400 bg-teal-400
+    bg-cyan-400 bg-sky-400 bg-blue-400 bg-indigo-400
+    bg-violet-400 bg-purple-400 bg-fuchsia-400 bg-pink-400
+  )
+
+  def messages_back_url(filter_tab) do
+    case filter_tab do
+      "followed_only" -> "/messages?tab=followed_only"
+      "not_followed" -> "/messages?tab=not_followed"
+      _ -> "/messages?tab=all"
+    end
+  end
+
+  def group_avatar_color(thread_id) when is_binary(thread_id) do
+    index = :erlang.phash2(thread_id, length(@group_colors))
+    Enum.at(@group_colors, index)
+  end
+
+  def group_avatar_color(_), do: "bg-base-300"
 
   def permalink(replied, object) do
     permalink(replied, object, nil)

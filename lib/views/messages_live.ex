@@ -79,6 +79,15 @@ defmodule Bonfire.UI.Messages.MessagesLive do
         feedback_message: l("Select a thread or start a new one..."),
         selected_tab: "messages",
         filter_tab: filter_tab,
+        search_term: nil,
+        composing_new: false,
+        selected_recipients: [],
+        compose_user: nil,
+        participants: [],
+        participants_names: nil,
+        reply_id: nil,
+        url: nil,
+        context_id: nil,
         page_header_aside: [
           {Bonfire.UI.Messages.HeaderAsideDmLive, [feed_id: feed_id]}
         ]
@@ -123,36 +132,43 @@ defmodule Bonfire.UI.Messages.MessagesLive do
     # debug(user: user)
 
     if user do
-      # smart_input_text =
-      #   if e(current_user, :character, :username, "") == e(user, :character, :username, ""),
-      #     do: "",
-      #     else: "@" <> e(user, :character, :username, "") <> " "
+      # Check if a DM thread already exists with this user
+      existing =
+        if id(user) != id(current_user) do
+          Bonfire.Messages.list(current_user, id(user),
+            latest_in_threads: true,
+            limit: 1
+          )
+        end
 
-      # to_circles = [
-      #   {e(user, :profile, :name, nil) || e(user, :character, :username, l("someone")), id(user)}
-      # ]
+      case e(existing, :edges, []) do
+        [%{activity: activity} | _] ->
+          # Found existing thread - redirect to it
+          thread_id = e(activity, :replied, :thread_id, nil) || id(e(activity, :object, nil))
 
-      {:noreply,
-       socket
-       |> assign(
-         page: "messages",
-         # feed: e(feed, :edges, []),
-         #  smart_input: true,
-         tab_id: "compose",
-         feed_title: l("Messages"),
-         filter_tab: filter_tab,
-         # the user to display
-         user: user
-         #  reply_to_id: nil,
-         #  thread_id: nil,
-         #  smart_input_opts: [prompt: l("Compose a thoughtful message...")],
-         #  to_circles: to_circles || []
-         #  sidebar_widgets:
-         #    LiveHandler.threads_widget(current_user, uid(e(assigns(socket), :user, nil)),
-         #      thread_id: nil,
-         #      tab_id: "compose"
-         #    )
-       )}
+          {:noreply,
+           socket
+           |> push_patch(to: "/messages/#{thread_id}")}
+
+        _ ->
+          # No existing thread - show new conversation view and open portal SmartInput
+          user_circle = [{id(user), e(user, :character, :username, "")}]
+          LiveHandler.open_dm_composer(user_circle, socket)
+
+          {:noreply,
+           socket
+           |> assign(
+             page: "messages",
+             tab_id: "new_conversation",
+             page_title:
+               e(user, :profile, :name, nil) || e(user, :character, :username, l("Messages")),
+             filter_tab: filter_tab,
+             compose_user: user,
+             composing_new: false,
+             thread_active: true,
+             page_header_aside: []
+           )}
+      end
     else
       {:noreply,
        socket
@@ -185,7 +201,9 @@ defmodule Bonfire.UI.Messages.MessagesLive do
 
   def handle_params(%{"id" => id} = params, url, socket) do
     if not is_uid?(id) do
-      handle_params(%{"username" => id}, url, socket)
+      # Strip leading @ since /messages/@:username route may match :id first
+      username = String.trim_leading(id, "@")
+      handle_params(%{"username" => username}, url, socket)
     else
       # show a message thread
 
@@ -324,7 +342,7 @@ defmodule Bonfire.UI.Messages.MessagesLive do
         page_title: l("Direct Messages"),
         thread_active: false,
         filter_tab: filter_tab,
-        # to_boundaries: [{"message", "Message"}],
+        composing_new: false,
         tab_id: nil
       )
     }
