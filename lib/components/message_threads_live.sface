@@ -13,26 +13,24 @@
       <div class="min-h-[50px] flex justify-between items-center px-4">
         <label for="sidebar-drawer" class="xl:hidden mr-3 btn btn-circle btn-ghost btn-sm">
           {#if is_map(current_user(@__context__))}
-
-          <div
-            style="border-width: 2px"
-            class="border rounded-full p-0 border-primary/50 border-2 hover:border-primary transition-colors relative"
-          >
-            <Bonfire.UI.Common.AvatarLive
-              bg_class="rounded-full"
-              title={e(current_user(@__context__), :profile, :name, "Anon")}
-              class="inline-block object-cover cursor-pointer rounded-full w-9 h-9"
-              src={Media.avatar_url(current_user(@__context__))}
-              user_id={current_user_id(@__context__)}
-            />
-            <span
-              style="bottom: -4px; right: -4px"
-              class="rounded-full bg-base-100 absolute -right-1 -bottom-1"
+            <div
+              style="border-width: 2px"
+              class="border rounded-full p-0 border-primary/50 border-2 hover:border-primary transition-colors relative"
             >
-              <#Icon iconify="ph:list-duotone" class="w-5 h-5 text-primary" />
-            </span>
-          </div>
-        
+              <Bonfire.UI.Common.AvatarLive
+                bg_class="rounded-full"
+                title={e(current_user(@__context__), :profile, :name, "Anon")}
+                class="inline-block object-cover cursor-pointer rounded-full w-9 h-9"
+                src={Media.avatar_url(current_user(@__context__))}
+                user_id={current_user_id(@__context__)}
+              />
+              <span
+                style="bottom: -4px; right: -4px"
+                class="rounded-full bg-base-100 absolute -right-1 -bottom-1"
+              >
+                <#Icon iconify="ph:list-duotone" class="w-5 h-5 text-primary" />
+              </span>
+            </div>
           {#else}
             <#Icon iconify="hugeicons:menu-02" class="w-5 h-5" />
           {/if}
@@ -104,117 +102,145 @@
       </div>
     </div>
     {#if e(@threads, :edges, []) != []}
-    <ul id="message_threads" class="flex mt-2 flex-col">
-      <li
-        :for={%{activity: activity} <- filter_threads(e(@threads, :edges, []), @search_term)}
-        class={[
-          "hover:bg-base-content/5 relative transition-colors duration-150",
-          "message-active": @thread_id == e(activity, :replied, :thread_id, nil)
-        ]}
-      >
-        <LinkPatchLive
-          to={permalink(
-            e(activity, :replied, nil),
-            e(activity, :object, nil) || e(activity, :object_id, nil),
-            @filter_tab
-          )}
-          class="flex items-center gap-3 px-4 py-3"
+      <ul id="message_threads" class="flex mt-2 flex-col">
+        <li
+          :for={%{activity: activity} <- filter_threads(e(@threads, :edges, []), @search_term)}
+          class={[
+            "hover:bg-base-content/5 relative transition-colors duration-150",
+            "message-active": @thread_id == e(activity, :replied, :thread_id, nil)
+          ]}
         >
-          {!-- AVATAR: 1-on-1 vs Group vs Fallback --}
-          {#case e(activity, :thread_participants, [])}
-            {#match [single]}
-              {!-- 1-on-1: other person's avatar --}
-              <div class="flex-none">
-                <Bonfire.UI.Common.AvatarLive
-                  src={Media.avatar_url(single)}
-                  user_id={id(single)}
-                  title={e(single, :profile, :name, nil)}
-                  wrapper_class="border-0 avatar !flex w-12 h-12"
-                  class="w-12 h-12 rounded-full object-cover"
+          <LinkPatchLive
+            to={permalink(
+              e(activity, :replied, nil),
+              e(activity, :object, nil) || e(activity, :object_id, nil),
+              @filter_tab
+            )}
+            class="flex items-center gap-3 px-4 py-3"
+          >
+            {!-- AVATAR: 1-on-1 vs Group vs Fallback --}
+            {#case e(activity, :thread_participants, [])}
+              {#match [single]}
+                {!-- 1-on-1: other person's avatar --}
+                <div class="flex-none">
+                  <Bonfire.UI.Common.AvatarLive
+                    src={Media.avatar_url(single)}
+                    user_id={id(single)}
+                    title={e(single, :profile, :name, nil)}
+                    wrapper_class="border-0 avatar !flex w-12 h-12"
+                    class="w-12 h-12 rounded-full object-cover"
+                  />
+                </div>
+              {#match [_, _ | _]}
+                {!-- Group (2+ participants): colored circle with group icon --}
+                <div class={"flex-none w-12 h-12 rounded-full flex items-center justify-center #{group_avatar_color(e(activity, :replied, :thread_id, nil))}"}>
+                  <#Icon iconify="ph:users-duotone" class="w-6 h-6 text-white" />
+                </div>
+              {#match _}
+                {!-- Fallback: last sender avatar --}
+                <div class="flex-none">
+                  <Bonfire.UI.Common.AvatarLive
+                    src={Media.avatar_url(e(activity, :subject, nil))}
+                    user_id={e(activity, :subject_id, nil)}
+                    wrapper_class="border-0 avatar !flex w-12 h-12"
+                    class="w-12 h-12 rounded-full object-cover"
+                  />
+                </div>
+            {/case}
+
+            {!-- TEXT CONTENT --}
+            <div class="flex-1 min-w-0">
+              {!-- Name + timestamp row --}
+              <div class="flex items-baseline justify-between gap-2">
+                <span
+                  data-id="thread_participants"
+                  class={[
+                    "text-[15px] truncate flex-1",
+                    "font-bold text-base-content":
+                      !e(activity, :seen, nil) && e(activity, :subject_id, nil) != current_user_id(@__context__),
+                    "font-medium text-base-content":
+                      !!e(activity, :seen, nil) || e(activity, :subject_id, nil) == current_user_id(@__context__)
+                  ]}
+                >
+                  {#case e(activity, :replied, :thread, :named, :name, nil)}
+                    {#match nil}
+                      {e(activity, :thread_participants_names, nil) ||
+                        e(activity, :subject, :profile, :name, nil) ||
+                        e(activity, :subject, :character, :username, nil) ||
+                        l("Someone")}
+                    {#match thread_name}
+                      {thread_name}
+                  {/case}
+                </span>
+                <time
+                  datetime={DatesTimes.date_from_pointer(activity)}
+                  class="text-xs text-base-content/50 flex-none whitespace-nowrap"
+                >{DatesTimes.date_from_now(activity)}</time>
+              </div>
+
+              {!-- Message preview + unread dot --}
+              <div class="flex items-center gap-2 mt-0.5">
+                <p class={[
+                  "text-sm truncate flex-1",
+                  "text-base-content/50":
+                    !!e(activity, :seen, nil) || e(activity, :subject_id, nil) == current_user_id(@__context__),
+                  "text-base-content/70":
+                    !e(activity, :seen, nil) && e(activity, :subject_id, nil) != current_user_id(@__context__)
+                ]}>
+                  {!-- In group chats, show sender name prefix --}
+                  {#case e(activity, :thread_participants, [])}
+                    {#match [_, _ | _]}
+                      <span class="font-medium text-base-content/70">
+                        {if e(activity, :subject_id, nil) == current_user_id(@__context__),
+                          do: l("Me"),
+                          else: e(activity, :subject, :profile, :name, nil)}:
+                      </span>{" "}
+                    {#match _}
+                  {/case}
+                  {Text.text_only(
+                    e(activity, :object, :post_content, :name, nil) ||
+                      e(activity, :object, :post_content, :summary, nil) ||
+                      e(activity, :object, :post_content, :html_body, nil)
+                  )}
+                </p>
+                {!-- Unread dot --}
+                <span
+                  :if={!e(activity, :seen, nil) && e(activity, :subject_id, nil) != current_user_id(@__context__)}
+                  class="flex-none w-2.5 h-2.5 rounded-full bg-primary"
                 />
               </div>
-            {#match [_, _ | _]}
-              {!-- Group (2+ participants): colored circle with group icon --}
-              <div class={"flex-none w-12 h-12 rounded-full flex items-center justify-center #{group_avatar_color(e(activity, :replied, :thread_id, nil))}"}>
-                <#Icon iconify="ph:users-duotone" class="w-6 h-6 text-white" />
-              </div>
-            {#match _}
-              {!-- Fallback: last sender avatar --}
-              <div class="flex-none">
-                <Bonfire.UI.Common.AvatarLive
-                  src={Media.avatar_url(e(activity, :subject, nil))}
-                  user_id={e(activity, :subject_id, nil)}
-                  wrapper_class="border-0 avatar !flex w-12 h-12"
-                  class="w-12 h-12 rounded-full object-cover"
-                />
-              </div>
-          {/case}
-
-          {!-- TEXT CONTENT --}
-          <div class="flex-1 min-w-0">
-            {!-- Name + timestamp row --}
-            <div class="flex items-baseline justify-between gap-2">
-              <span
-                data-id="thread_participants"
-                class={[
-                  "text-[15px] truncate flex-1",
-                  "font-bold text-base-content": !e(activity, :seen, nil) && e(activity, :subject_id, nil) != current_user_id(@__context__),
-                  "font-medium text-base-content": !!e(activity, :seen, nil) || e(activity, :subject_id, nil) == current_user_id(@__context__)
-                ]}
-              >
-                {#case e(activity, :replied, :thread, :named, :name, nil)}
-                  {#match nil}
-                    {e(activity, :thread_participants_names, nil) ||
-                      e(activity, :subject, :profile, :name, nil) ||
-                      e(activity, :subject, :character, :username, nil) ||
-                      l("Someone")}
-                  {#match thread_name}
-                    {thread_name}
-                {/case}
-              </span>
-              <time
-                datetime={DatesTimes.date_from_pointer(activity)}
-                class="text-xs text-base-content/50 flex-none whitespace-nowrap"
-              >{DatesTimes.date_from_now(activity)}</time>
             </div>
+          </LinkPatchLive>
+        </li>
+      </ul>
 
-            {!-- Message preview + unread dot --}
-            <div class="flex items-center gap-2 mt-0.5">
-              <p class={[
-                "text-sm truncate flex-1",
-                "text-base-content/50": !!e(activity, :seen, nil) || e(activity, :subject_id, nil) == current_user_id(@__context__),
-                "text-base-content/70": !e(activity, :seen, nil) && e(activity, :subject_id, nil) != current_user_id(@__context__)
-              ]}>
-                {!-- In group chats, show sender name prefix --}
-                {#case e(activity, :thread_participants, [])}
-                  {#match [_, _ | _]}
-                    <span class="font-medium text-base-content/70">
-                      {if e(activity, :subject_id, nil) == current_user_id(@__context__),
-                        do: l("Me"),
-                        else: e(activity, :subject, :profile, :name, nil)}:
-                    </span>{" "}
-                  {#match _}
-                {/case}
-                {Text.text_only(
-                  e(activity, :object, :post_content, :name, nil) ||
-                    e(activity, :object, :post_content, :summary, nil) ||
-                    e(activity, :object, :post_content, :html_body, nil)
-                )}
-              </p>
-              {!-- Unread dot --}
-              <span
-                :if={!e(activity, :seen, nil) && e(activity, :subject_id, nil) != current_user_id(@__context__)}
-                class="flex-none w-2.5 h-2.5 rounded-full bg-primary"
-              />
-            </div>
-          </div>
-        </LinkPatchLive>
-      </li>
-    </ul>
+      {#if filter_threads(e(@threads, :edges, []), @search_term) == [] && @search_term}
+        <div class="flex flex-col items-center gap-2 py-8 text-center">
+          <p class="text-sm text-base-content/50">{l("No conversations match your search")}</p>
+        </div>
+      {/if}
 
-    {#if filter_threads(e(@threads, :edges, []), @search_term) == [] && @search_term}
-      <div class="flex flex-col items-center gap-2 py-8 text-center">
-        <p class="text-sm text-base-content/50">{l("No conversations match your search")}</p>
+      <Bonfire.UI.Common.LoadMoreLive
+        live_handler={Bonfire.Messages}
+        page_info={e(@threads, :page_info, nil)}
+        context={@context}
+      />
+    {#else}
+      <div class="flex flex-col items-center gap-3 my-12 px-6 text-center">
+        <div class="w-16 h-16 rounded-full bg-base-content/5 flex items-center justify-center mb-2">
+          <#Icon iconify="tabler:mail" class="w-8 h-8 text-base-content/30" />
+        </div>
+        <h3 class="text-lg font-bold">{l("Welcome to your inbox")}</h3>
+        <p class="text-sm text-base-content/50 max-w-[260px]">
+          {l("Drop a line, write a direct message with other users in the fediverse.")}
+        </p>
+        <button
+          phx-click="Bonfire.Messages:toggle_contact_picker"
+          class="gap-2 mt-3 btn btn-sm btn-soft btn-primary"
+        >
+          <#Icon iconify="tabler:mail-plus" class="w-4 h-4" />
+          {l("Send a message")}...
+        </button>
       </div>
     {/if}
 

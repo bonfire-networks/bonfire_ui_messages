@@ -65,14 +65,12 @@
             replied_activity_class="relative mb-2 rounded-md bg-base-100 hover:bg-base-100"
           />
         </div>
-
       {#match "new_conversation"}
         <Bonfire.UI.Messages.NewConversationLive
           recipients={@selected_recipients}
           compose_user={@compose_user}
           filter_tab={@filter_tab}
         />
-
       {#match _}
         <div class="flex w-full h-full flex-1 place-content-center items-center">
           <div class="flex flex-col gap-3 items-center">

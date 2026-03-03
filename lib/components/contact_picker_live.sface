@@ -96,8 +96,8 @@
               page_info={e(@suggested_users, :page_info, nil)}
               context="contacts"
               target={@myself}
-              infinite_scroll={true}
-              hide_if_no_more={true}
+              infinite_scroll
+              hide_if_no_more
             />
           {/if}
         {#else}
@@ -111,10 +111,7 @@
   {!-- Start direct message button --}
   {#if length(@selected_recipients) >= 1}
     <div class="sticky bottom-0 bg-base-100 border-t border-base-content/10 p-3">
-      <button
-        phx-click="Bonfire.Messages:start_direct_message"
-        class="btn btn-primary btn-sm w-full"
-      >
+      <button phx-click="Bonfire.Messages:start_direct_message" class="btn btn-primary btn-sm w-full">
         {l("Start direct message")}
       </button>
     </div>
