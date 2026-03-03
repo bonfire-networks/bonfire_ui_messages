@@ -226,7 +226,7 @@
   {#else}
     <div class="flex flex-col items-center gap-3 my-12 px-6 text-center">
       <div class="w-16 h-16 rounded-full bg-base-content/5 flex items-center justify-center mb-2">
-        <#Icon iconify="tabler:mail" class="w-8 h-8 text-base-content/30" />
+        <#Icon iconify="ph:tray-duotone" class="w-8 h-8 text-base-content/30" />
       </div>
       <h3 class="text-lg font-bold">{l("Welcome to your inbox")}</h3>
       <p class="text-sm text-base-content/50 max-w-[260px]">
@@ -236,7 +236,7 @@
         phx-click="Bonfire.Messages:toggle_contact_picker"
         class="gap-2 mt-3 btn btn-sm btn-soft btn-primary"
       >
-        <#Icon iconify="tabler:mail-plus" class="w-4 h-4" />
+        <#Icon iconify="ph:tray-duotone" class="w-4 h-4" />
         {l("Send a message")}...
       </button>
     </div>

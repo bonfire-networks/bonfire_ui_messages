@@ -81,7 +81,7 @@
               phx-click="Bonfire.Messages:toggle_contact_picker"
               class="btn btn-primary gap-2"
             >
-              <#Icon iconify="tabler:mail-plus" class="w-5 h-5" />
+              <#Icon iconify="ph:tray-duotone" class="w-5 h-5" />
               {l("New direct message")}
             </button>
           </div>

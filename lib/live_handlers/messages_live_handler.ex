@@ -397,24 +397,22 @@ defmodule Bonfire.Messages.LiveHandler do
 
   defp enrich_threads_with_participants(threads, current_user) do
     current_user_id = id(current_user)
+    thread_edges = e(threads, :edges, [])
+
+    # Single batch query for all threads' participants (eliminates N+1)
+    participants_by_thread =
+      Bonfire.Social.Threads.list_participants_for_threads(
+        thread_edges,
+        current_user: current_user,
+        skip_boundary_check: true,
+        limit: 5
+      )
 
     edges =
-      Enum.map(e(threads, :edges, []), fn %{activity: activity} = edge ->
+      Enum.map(thread_edges, fn %{activity: activity} = edge ->
         thread_id = e(activity, :replied, :thread_id, nil)
 
-        participants =
-          if thread_id do
-            Bonfire.Social.Threads.list_participants(
-              activity,
-              thread_id,
-              current_user: current_user,
-              skip_boundary_check: true,
-              limit: 5
-            )
-            |> List.wrap()
-          else
-            [e(activity, :subject, nil)] |> Enum.reject(&is_nil/1)
-          end
+        participants = Map.get(participants_by_thread, thread_id, [])
 
         other_participants = Enum.reject(participants, &(id(&1) == current_user_id))
 
