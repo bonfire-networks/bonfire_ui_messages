@@ -2,12 +2,12 @@ defmodule Bonfire.Messages.LiveHandler do
   use Bonfire.UI.Common.Web, :live_handler
   alias Bonfire.Messages
 
-  def handle_params(%{"after" => cursor, "context" => context} = _attrs, _, socket) do
-    live_more(context, [after: cursor], socket)
+  def handle_params(%{"after" => cursor} = attrs, _, socket) do
+    live_more(attrs["context"], [after: cursor], socket)
   end
 
-  def handle_params(%{"before" => cursor, "context" => context} = _attrs, _, socket) do
-    live_more(context, [before: cursor], socket)
+  def handle_params(%{"before" => cursor} = attrs, _, socket) do
+    live_more(attrs["context"], [before: cursor], socket)
   end
 
   def handle_event("load_more", %{"context" => "contacts"} = attrs, socket) do
@@ -398,6 +398,10 @@ defmodule Bonfire.Messages.LiveHandler do
   defp enrich_threads_with_participants(threads, current_user) do
     current_user_id = id(current_user)
     thread_edges = e(threads, :edges, [])
+
+    # Preload tags (DM recipients) on thread edges so list_participants_for_threads can extract them
+    thread_edges =
+      repo().maybe_preload(thread_edges, activity: [object: [tags: [:character, profile: :icon]]])
 
     # Single batch query for all threads' participants (eliminates N+1)
     participants_by_thread =

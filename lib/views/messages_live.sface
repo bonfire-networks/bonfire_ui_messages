@@ -1,4 +1,4 @@
-<main class="h-full bg-base-100 flex flex-1 w-full shadow">
+<main class="h-full bg-base-100 flex flex-1 w-full overflow-hidden shadow">
   <Bonfire.UI.Messages.MessageThreadsLive
     showing_within={:messages}
     context={current_user_id(@__context__)}
@@ -65,22 +65,17 @@
             replied_activity_class="relative mb-2 rounded-md bg-base-100 hover:bg-base-100"
           />
         </div>
-
       {#match "new_conversation"}
         <Bonfire.UI.Messages.NewConversationLive
           recipients={@selected_recipients}
           compose_user={@compose_user}
           filter_tab={@filter_tab}
         />
-
       {#match _}
         <div class="flex w-full h-full flex-1 place-content-center items-center">
           <div class="flex flex-col gap-3 items-center">
             <h3 class="text-xl font-bold">{l("Select a conversation")}</h3>
-            <button
-              phx-click="Bonfire.Messages:toggle_contact_picker"
-              class="btn btn-primary gap-2"
-            >
+            <button phx-click="Bonfire.Messages:toggle_contact_picker" class="btn btn-primary gap-2">
               <#Icon iconify="ph:tray-duotone" class="w-5 h-5" />
               {l("New direct message")}
             </button>

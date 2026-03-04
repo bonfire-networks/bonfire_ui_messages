@@ -11,7 +11,8 @@ defmodule Bonfire.UI.Messages.NewConversationLive do
         Enum.map_join(recipients, " & ", fn {_id, name} -> name end)
 
       _ when not is_nil(compose_user) ->
-        e(compose_user, :profile, :name, nil) || e(compose_user, :character, :username, l("someone"))
+        e(compose_user, :profile, :name, nil) ||
+          e(compose_user, :character, :username, l("someone"))
 
       _ ->
         nil
