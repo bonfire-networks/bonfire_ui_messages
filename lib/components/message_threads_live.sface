@@ -78,7 +78,7 @@
           class={[
             "btn btn-sm rounded-full",
             "btn-active": (@filter_tab || "all") == "all",
-            "btn-neutral text-base-content/70": (@filter_tab || "all") != "all"
+            "text-base-content/70": (@filter_tab || "all") != "all"
           ]}
         >{l("All")}</LinkLive>
         <LinkLive
@@ -87,7 +87,7 @@
           class={[
             "btn btn-sm rounded-full",
             "btn-active": @filter_tab == "followed_only",
-            "btn-neutral text-base-content/70": @filter_tab != "followed_only"
+            "text-base-content/70": @filter_tab != "followed_only"
           ]}
         >{l("Followed only")}</LinkLive>
         <LinkLive
@@ -96,7 +96,7 @@
           class={[
             "btn btn-sm rounded-full",
             "btn-active": @filter_tab == "not_followed",
-            "btn-neutral text-base-content/70": @filter_tab != "not_followed"
+            "text-base-content/70": @filter_tab != "not_followed"
           ]}
         >{l("Other")}</LinkLive>
       </div>
