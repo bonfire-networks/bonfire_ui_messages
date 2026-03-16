@@ -1,4 +1,4 @@
-<main class="h-full bg-base-100 flex flex-1 w-full overflow-hidden shadow">
+<main class="h-full  flex flex-1 w-full overflow-hidden bonfire-wrapper lg:mt-4">
   <Bonfire.UI.Messages.MessageThreadsLive
     showing_within={:messages}
     context={current_user_id(@__context__)}
