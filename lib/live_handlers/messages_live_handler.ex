@@ -396,51 +396,63 @@ defmodule Bonfire.Messages.LiveHandler do
   end
 
   defp enrich_threads_with_participants(threads, current_user) do
+    # NOTE: maybe instead of loading/computing the list of thread participants & names we should compute that once and set the names in thread name/title
+
     current_user_id = id(current_user)
-    thread_edges = e(threads, :edges, [])
 
     # Preload tags (DM recipients) on thread edges so list_participants_for_threads can extract them
     thread_edges =
-      repo().maybe_preload(thread_edges, activity: [object: [tags: [:character, profile: :icon]]])
+      e(threads, :edges, [])
+      |> repo().maybe_preload(activity: [object: [tags: [:character, profile: :icon]]])
 
     # Single batch query for all threads' participants (eliminates N+1)
+    # current_user excluded at DB level; known tag recipients excluded inside list_participants_for_threads
     participants_by_thread =
       Bonfire.Social.Threads.list_participants_for_threads(
         thread_edges,
         current_user: current_user,
         skip_boundary_check: true,
-        limit: 5
+        limit: 5,
+        exclude_subject_ids: [current_user_id]
       )
 
-    edges =
-      Enum.map(thread_edges, fn %{activity: activity} = edge ->
-        thread_id = e(activity, :replied, :thread_id, nil)
+    # |> debug("participants_by_thread")
 
-        participants = Map.get(participants_by_thread, thread_id, [])
+    thread_edges =
+      Enum.map(thread_edges, fn
+        %{activity: %{replied: %{thread_id: thread_id}} = activity} = edge
+        when is_binary(thread_id) ->
+          other_participants = Map.get(participants_by_thread, thread_id, [])
 
-        other_participants = Enum.reject(participants, &(id(&1) == current_user_id))
+          count = length(other_participants)
 
-        names =
-          case other_participants do
-            [] ->
-              nil
+          names =
+            case other_participants do
+              [] ->
+                nil
 
-            others ->
-              Enum.map_join(others, " & ", fn p ->
-                e(p, :profile, :name, nil) ||
-                  e(p, :character, :username, nil) ||
-                  l("someone")
-              end)
-          end
+              others ->
+                Enum.map_join(others, " & ", fn p ->
+                  e(p, :profile, :name, nil) ||
+                    e(p, :character, :username, nil) ||
+                    l("someone")
+                end)
+            end
 
-        activity =
-          activity
-          |> Map.put(:thread_participants, other_participants)
-          |> Map.put(:thread_participants_names, names)
+          %{
+            edge
+            | activity:
+                activity
+                # |> Map.put(:thread_participants, other_participants) # not used in component right now
+                |> Map.put(:thread_other_participant, if(count == 1, do: hd(other_participants)))
+                |> Map.put(:thread_participant_count, count)
+                |> Map.put(:thread_participants_names, names)
+          }
 
-        %{edge | activity: activity}
+        edge ->
+          edge
       end)
 
-    Map.put(threads, :edges, edges)
+    Map.put(threads, :edges, thread_edges)
   end
 end

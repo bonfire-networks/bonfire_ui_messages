@@ -400,8 +400,8 @@ defmodule Bonfire.UI.Messages.MessagesLive do
   def handle_info({:new_message, _}, socket) do
     current_user = current_user_required!(socket)
 
-    # Check if we're already viewing this thread
-    current_thread_id = e(assigns(socket), :thread_id, nil)
+    # TODO: check if we're already viewing this thread?
+    # current_thread_id = e(assigns(socket), :thread_id, nil)
 
     # TODO: just add the new thread instead? but need to handle cases where it's a reply to an existing thread
     threads = LiveHandler.list_threads(current_user, socket)
