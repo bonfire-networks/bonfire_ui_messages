@@ -1,7 +1,4 @@
-<div class={[
-  "flex-1 w-full min-w-0 md:w-[390px] md:max-w-[390px] md:border-r border-base-content/10 max-h-dvh overflow-y-auto overflow-x-hidden",
-  "!hidden md:!block": e(@thread_active, false)
-]}>
+<div class="flex-1 w-full">
   {#if @composing_new}
     {!-- Contact picker replaces thread list --}
     <Bonfire.UI.Messages.ContactPickerLive
@@ -10,44 +7,22 @@
     />
   {#else}
     <div class="sticky top-0 bg-base-100 z-50 pt-safe">
-      <div class="min-h-[50px] flex justify-between items-center px-4">
-        <label for="sidebar-drawer" class="xl:hidden mr-3 btn btn-circle btn-ghost btn-sm">
-          {#if is_map(current_user(@__context__))}
-            <div
-              style="border-width: 2px"
-              class="border rounded-full p-0 border-primary/50 border-2 hover:border-primary transition-colors relative"
-            >
-              <Bonfire.UI.Common.AvatarLive
-                bg_class="rounded-full"
-                title={e(current_user(@__context__), :profile, :name, "Anon")}
-                class="inline-block object-cover cursor-pointer rounded-full w-9 h-9"
-                src={Media.avatar_url(current_user(@__context__))}
-                user_id={current_user_id(@__context__)}
-              />
-              <span
-                style="bottom: -4px; right: -4px"
-                class="rounded-full bg-base-100 absolute -right-1 -bottom-1"
-              >
-                <#Icon iconify="ph:list-duotone" class="w-5 h-5 text-primary" />
-              </span>
-            </div>
-          {#else}
-            <#Icon iconify="hugeicons:menu-02" class="w-5 h-5" />
-          {/if}
-        </label>
-        <h3 class="text-sm ml-4 font-bold flex-1">{l("Messages")}</h3>
+      <div class="py-2 flex justify-between items-center px-4">
+        <h3 class="text-sm font-bold flex-1">{l("Messages")}</h3>
         <div class="flex items-center gap-2">
-          <Bonfire.UI.Messages.NewDmLive />
-          <StatelessComponent
-            module={maybe_component(Bonfire.UI.Social.HeaderAsideNotificationsSeenLive, @__context__)}
-            feed_id={e(current_user(@__context__), :character, :inbox_id, nil)}
-            feed_name="inbox"
-          />
+          <button
+            phx-click="Bonfire.Messages:toggle_contact_picker"
+            class="btn btn-primary"
+            aria-label={l("New message")}
+          >
+            <#Icon iconify="tabler:mail-plus" class="w-5 h-5" />
+            <span>{l("New Direct Message")}</span>
+          </button>
         </div>
       </div>
-      <div class="px-3 pt-2">
+      <div class="px-4">
         <form phx-change="Bonfire.Messages:search_threads">
-          <label class="input input-sm w-full flex items-center gap-2 bg-base-content/5 border-0 rounded-lg focus-within:outline-primary">
+          <label class="input w-full flex items-center gap-2 bg-base-content/5 border-0 rounded-lg focus-within:none">
             <#Icon iconify="ph:magnifying-glass-duotone" class="w-4 h-4 text-base-content/40" />
             <span class="sr-only">{l("Search messages")}</span>
             <input
@@ -103,25 +78,49 @@
     </div>
     {#if e(@threads, :edges, []) != []}
       <ul id="message_threads" class="flex mt-2 flex-col">
-        <li
-          :for={%{activity: activity} <- filter_threads(e(@threads, :edges, []), @search_term)}
-          class={[
-            "hover:bg-base-content/5 relative transition-colors duration-150",
-            "message-active": @thread_id == e(activity, :replied, :thread_id, nil)
-          ]}
-        >
-          <LinkPatchLive
-            to={permalink(
-              e(activity, :replied, nil),
-              e(activity, :object, nil) || e(activity, :object_id, nil),
-              @filter_tab
-            )}
-            class="flex items-center gap-3 px-4 py-3"
-          >
+        {#for %{activity: activity} <- filter_threads(e(@threads, :edges, []), @search_term)}
+          {#case {thread_id(activity), permalink(e(activity, :replied, nil), e(activity, :object, nil) || e(activity, :object_id, nil), @filter_tab)}}
+            {#match {tid, thread_permalink}}
+              <li
+                id={"thread-#{tid}"}
+                data-id={"thread_#{tid}"}
+                data-href={thread_permalink}
+                phx-hook="Bonfire.UI.Common.PreviewContentLive#PreviewActivity"
+                class={[
+                  "hover:bg-base-content/5 relative transition-colors duration-150 cursor-pointer previewable_activity",
+                  "message-active": @thread_id == tid
+                ]}
+              >
+                <Bonfire.UI.Common.OpenPreviewLive
+                  href={thread_permalink}
+                  parent_id={"thread-#{tid}"}
+                  open_btn_text=""
+                  title_text={e(activity, :replied, :thread, :named, :name, nil) ||
+                    e(activity, :thread_participants_names, nil) ||
+                    l("Conversation")}
+                  modal_assigns={[
+                    object_id: tid,
+                    thread_id: tid,
+                    current_url: thread_permalink,
+                    show: true,
+                    showing_within: :thread,
+                    modal_component: Bonfire.UI.Social.ObjectThreadLive,
+                    modal_component_stateful?: true,
+                    loaded: true,
+                    sort_by: :latest_reply,
+                    sort_order: :asc,
+                    show_reply_input: true
+                  ]}
+                  root_assigns={[
+                    page_title: l("Conversation")
+                  ]}
+                />
+
+          <div class="flex items-center gap-3 px-4 py-3">
             {!-- AVATAR: 1-on-1 vs Group Thread vs Fallback --}
             {#case e(activity, :thread_participant_count, 0)}
               {#match 1}
-                <!-- 1-on-1: other person's avatar -->
+                {!-- 1-on-1: other person's avatar --}
                 <div class="flex-none">
                   <Bonfire.UI.Common.AvatarLive
                     src={Media.avatar_url(e(activity, :thread_other_participant, nil))}
@@ -211,11 +210,13 @@
                 />
               </div>
             </div>
-          </LinkPatchLive>
-        </li>
+          </div>
+              </li>
+          {/case}
+        {/for}
       </ul>
 
-      {#if filter_threads(e(@threads, :edges, []), @search_term) == [] && @search_term}
+      {#if @search_term && filter_threads(e(@threads, :edges, []), @search_term) == []}
         <div class="flex flex-col items-center gap-2 py-8 text-center">
           <p class="text-sm text-base-content/50">{l("No conversations match your search")}</p>
         </div>

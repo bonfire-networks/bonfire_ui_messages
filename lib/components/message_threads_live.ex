@@ -4,14 +4,16 @@ defmodule Bonfire.UI.Messages.MessageThreadsLive do
 
   prop threads, :any, default: nil
   prop thread_id, :string, default: nil
-  prop tab_id, :string, default: nil
   prop context, :any, default: nil
   prop showing_within, :atom, default: nil
-  prop thread_active, :boolean, default: false
   prop filter_tab, :string, default: "all"
   prop search_term, :string, default: nil
   prop composing_new, :boolean, default: false
   prop selected_recipients, :list, default: []
+
+  def thread_id(activity) do
+    e(activity, :replied, :thread_id, nil) || id(e(activity, :object, nil))
+  end
 
   def filter_threads(edges, nil), do: edges
   def filter_threads(edges, ""), do: edges
@@ -82,34 +84,25 @@ defmodule Bonfire.UI.Messages.MessageThreadsLive do
 
   defp mls_encrypted?(_), do: false
 
-  defp default_permalink(replied, object, tab) do
+  defp default_permalink(replied, object, _tab) do
     thread_id = e(replied, :thread_id, nil)
     object_id = id(object)
 
     thread_url =
       if thread_id do
-        "/messages/#{thread_id}"
+        "/discussion/#{thread_id}"
       end
 
-    base_url =
-      if thread_url && thread_id != object_id do
-        # e(assigns, :thread_level, nil) ||
-        thread_level =
-          length(e(replied, :path, []))
+    if thread_url && thread_id != object_id do
+      thread_level = length(e(replied, :path, []))
 
-        if thread_level > 0 do
-          "#{thread_url}/reply/#{thread_level}/#{object_id}"
-        else
-          "#{thread_url}/reply/#{object_id}"
-        end
+      if thread_level > 0 do
+        "#{thread_url}/reply/#{thread_level}/#{object_id}"
       else
-        "/messages/#{object_id}"
+        "#{thread_url}/reply/#{object_id}"
       end
-
-    # Add tab parameter if provided and valid
-    case tab do
-      tab when tab in ["all", "followed_only", "not_followed"] -> "#{base_url}?tab=#{tab}"
-      _ -> base_url
+    else
+      "/discussion/#{object_id}"
     end
   end
 end

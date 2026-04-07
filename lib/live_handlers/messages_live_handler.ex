@@ -130,11 +130,7 @@ defmodule Bonfire.Messages.LiveHandler do
 
     {:noreply,
      socket
-     |> assign(
-       composing_new: false,
-       tab_id: "new_conversation",
-       thread_active: true
-     )}
+     |> assign(composing_new: false)}
   end
 
   def handle_event("send_new_conversation", params, socket) do
@@ -363,14 +359,15 @@ defmodule Bonfire.Messages.LiveHandler do
 
     with {:ok, sent} <-
            Messages.send([context: assigns(socket)[:__context__] || current_user(socket)], attrs) do
-      # debug(sent, "sent!")
       message_sent(sent, attrs, socket)
-      # else e ->
-      #   debug(message_error: e)
-      #   {:noreply,
-      #     socket
-      #     |> assign_flash(:error, "Could not send...")
-      #   }
+    else
+      e ->
+        debug(message_error: e)
+
+        {:noreply,
+         socket
+         |> Bonfire.UI.Common.SmartInput.LiveHandler.reset_input()
+         |> assign_flash(:error, l("Could not send the message"))}
     end
   end
 
@@ -386,13 +383,13 @@ defmodule Bonfire.Messages.LiveHandler do
   defp message_sent(sent, _attrs, socket) do
     thread_id = e(sent, :replied, :thread_id, nil) || uid(sent)
 
-    {
-      :noreply,
-      socket
-      |> Bonfire.UI.Common.SmartInput.LiveHandler.reset_input()
-      |> assign_flash(:info, l("Sent!"))
-      |> push_patch(to: "/messages/#{thread_id}")
-    }
+    {:noreply,
+     socket
+     |> Bonfire.UI.Common.SmartInput.LiveHandler.reset_input()
+     |> assign_flash(
+       :info,
+       "<a href='/discussion/#{thread_id}' class='link link-hover font-semibold'>#{l("Sent!")} →</a>"
+     )}
   end
 
   defp enrich_threads_with_participants(threads, current_user) do

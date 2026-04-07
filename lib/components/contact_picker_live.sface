@@ -1,23 +1,31 @@
 <div class="flex flex-col h-full">
   {!-- Header --}
   <div class="sticky top-0 bg-base-100 z-50 pt-safe">
-    <div class="min-h-[50px] flex items-center gap-3 px-4">
-      <button
-        phx-click="Bonfire.Messages:toggle_contact_picker"
-        class="btn btn-ghost btn-sm btn-circle"
-        aria-label={l("Back")}
-      >
-        <#Icon iconify="ph:arrow-left" class="w-5 h-5" />
-      </button>
-      <h3 class="text-lg font-bold flex-1">
-        {l("New message")}
-      </h3>
+    <div class="min-h-[50px] flex items-center gap-3 px-4 justify-between">
+      <div class="flex items-center gap-3">  
+        <button
+          phx-click="Bonfire.Messages:toggle_contact_picker"
+          class="btn btn-ghost btn-sm btn-circle"
+          aria-label={l("Back")}
+        >
+          <#Icon iconify="ph:arrow-left" class="w-5 h-5" />
+        </button>
+        <h3 class="text-lg font-bold flex-1">
+          {l("New message")}
+        </h3>
+      </div>
+      {!-- Start direct message button --}
+      {#if @selected_recipients != []}
+        <button phx-click="Bonfire.Messages:start_direct_message" class="btn btn-primary btn-sm">
+          {l("Compose")}
+        </button>
+      {/if}
     </div>
 
     {!-- Search input --}
-    <div class="px-3 pt-2 pb-2">
+    <div class="px-4 pb-2">
       <form phx-change="search_contacts" phx-target={@myself}>
-        <label class="input input-sm w-full flex items-center gap-2 bg-base-content/5 border-0 rounded-lg focus-within:outline-primary">
+        <label class="input  w-full flex items-center gap-2 bg-base-content/5 border-0 rounded-lg focus-within:none">
           <#Icon iconify="ph:magnifying-glass-duotone" class="w-4 h-4 text-base-content/40" />
           <input
             type="text"
@@ -107,13 +115,4 @@
         {/if}
     {/case}
   </div>
-
-  {!-- Start direct message button --}
-  {#if length(@selected_recipients) >= 1}
-    <div class="sticky bottom-0 bg-base-100 border-t border-base-content/10 p-3">
-      <button phx-click="Bonfire.Messages:start_direct_message" class="btn btn-primary btn-sm w-full">
-        {l("Start direct message")}
-      </button>
-    </div>
-  {/if}
 </div>
