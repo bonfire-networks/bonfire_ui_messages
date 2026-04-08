@@ -6,13 +6,13 @@
       selected_recipients={@selected_recipients}
     />
   {#else}
-    <div class="sticky top-0 bg-base-100 z-50 pt-safe">
+    <div class="sticky top-0 bg-base-100 z-50">
       <div class="py-2 flex justify-between items-center px-4">
-        <h3 class="text-sm font-bold flex-1">{l("Messages")}</h3>
-        <div class="flex items-center gap-2">
+        <!-- <h3 class="text-sm font-bold flex-1">{l("Messages")}</h3> -->
+        <div class="flex items-center gap-2 w-full">
           <button
             phx-click="Bonfire.Messages:toggle_contact_picker"
-            class="btn btn-primary"
+            class="btn btn-primary w-full"
             aria-label={l("New message")}
           >
             <#Icon iconify="tabler:mail-plus" class="w-5 h-5" />
@@ -108,8 +108,10 @@
                     modal_component_stateful?: true,
                     loaded: true,
                     sort_by: :latest_reply,
+                    hide_thread_stats: true,
                     sort_order: :asc,
-                    show_reply_input: true
+                    show_reply_input: true,
+                    thread_mode: :flat
                   ]}
                   root_assigns={[
                     page_title: l("Conversation")

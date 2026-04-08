@@ -1,8 +1,8 @@
 <div class="flex items-center gap-2">
   <StatelessComponent
     module={maybe_component(Bonfire.UI.Social.HeaderAsideNotificationsSeenLive, @__context__)}
-    feed_id={:inbox}
+    feed_id={@feed_id}
     feed_name="messages"
   />
-  <Bonfire.UI.Messages.NewDmLive />
+  <!-- <Bonfire.UI.Messages.NewDmLive /> -->
 </div>

@@ -60,7 +60,8 @@ defmodule Bonfire.UI.Messages.MessagesLive do
         composing_new: false,
         selected_recipients: [],
         page_header_aside: [
-          {Bonfire.UI.Messages.HeaderAsideDmLive, [feed_id: feed_id]}
+          {Bonfire.UI.Messages.HeaderAsideDmLive,
+           [feed_id: e(current_user, :character, :inbox_id, nil) || feed_id]}
         ]
       )
     }
