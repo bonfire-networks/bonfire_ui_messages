@@ -113,7 +113,6 @@
                     modal_component_stateful?: true,
                     loaded: true,
                     sort_by: :latest_reply,
-                    hide_thread_stats: true,
                     sort_order: :asc,
                     show_reply_input: true,
                     thread_mode: :flat
@@ -122,6 +121,7 @@
                     page_title: l("Conversation")
                   ]}
                 />
+                <!-- hide_thread_stats: true, -->
 
                 <div class="flex items-center gap-3 px-4 py-3">
                   {!-- AVATAR: 1-on-1 vs Group Thread vs Fallback --}
