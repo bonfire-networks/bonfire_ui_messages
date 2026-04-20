@@ -78,7 +78,7 @@ defmodule Bonfire.UI.Messages.CreateMessageTest do
     |> refute_has("[data-id=feed]", text: content)
   end
 
-  test "recipient can send reply, which appears instantly on thread page", %{
+  test "reply to a thread appears in the inbox thread list", %{
     me: me,
     recipient: recipient,
     conn: conn
@@ -101,14 +101,13 @@ defmodule Bonfire.UI.Messages.CreateMessageTest do
       reply_to_id: op.id
     }
 
-    next = "/messages/#{id(op)}"
-    # |> IO.inspect
-    assert {:ok, re} =
+    assert {:ok, _re} =
              Messages.send(me, reply, recipient)
 
+    # Thread content is now shown via preview modal; the thread list previews the latest reply
     conn
-    |> visit(next)
-    |> assert_has_or_open_browser("article", text: content)
+    |> visit("/messages")
+    |> assert_has_or_open_browser("#message_threads", text: content)
   end
 
   describe "DM filtering tabs" do
@@ -262,7 +261,7 @@ defmodule Bonfire.UI.Messages.CreateMessageTest do
   end
 
   describe "tab state preservation" do
-    test "tab context is preserved when navigating to individual thread", %{
+    test "followed_only tab filter persists across visits", %{
       conn: conn,
       me: me,
       recipient: recipient,
@@ -275,20 +274,19 @@ defmodule Bonfire.UI.Messages.CreateMessageTest do
 
       {:ok, _follow} = Follows.follow(me, recipient)
 
-      {:ok, followed_op} =
+      {:ok, _followed_op} =
         Messages.send(recipient, %{post_content: %{html_body: followed_content}}, me)
 
       {:ok, _unfollowed_op} =
         Messages.send(unfollowed_user, %{post_content: %{html_body: unfollowed_content}}, me)
 
-      # Start from Followed Only tab and click into a thread
+      # Thread preview is now a JS-driven modal so we don't navigate off the inbox —
+      # verify the URL-based tab filter keeps working on revisits.
       conn
       |> visit("/messages?tab=followed_only")
       |> assert_has_or_open_browser("#message_threads", text: followed_content)
-      |> click_link(followed_content)
-      |> assert_has_or_open_browser("article", text: followed_content)
+      |> refute_has("#message_threads", text: unfollowed_content)
 
-      # Navigate back should return to Followed Only tab context
       conn
       |> visit("/messages?tab=followed_only")
       |> assert_has_or_open_browser("#message_threads", text: followed_content)

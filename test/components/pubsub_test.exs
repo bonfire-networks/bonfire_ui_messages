@@ -16,17 +16,21 @@ defmodule Bonfire.UI.Messages.PubSub.Test do
     {:ok, conn: conn, alice: alice, me: me}
   end
 
-  test "new reply appears in a message thread in real time", %{conn: conn, alice: alice, me: me} do
+  test "new reply to an existing thread appears in inbox in real time", %{
+    conn: conn,
+    alice: alice,
+    me: me
+  } do
     # I create a thread with alice
-    {:ok, %{id: thread_id} = post} =
+    {:ok, %{id: thread_id} = _post} =
       Bonfire.Messages.send(
         me,
         %{post_content: %{html_body: "Thread root"}},
         [alice.id]
       )
 
-    # Visit the thread page 
-    conn = visit(conn, "/messages/#{thread_id}")
+    # Visit the inbox (thread content itself now opens via preview modal)
+    conn = visit(conn, "/messages")
 
     reply_content = "This is a live reply in the thread"
 
@@ -43,7 +47,7 @@ defmodule Bonfire.UI.Messages.PubSub.Test do
     end)
 
     conn
-    |> assert_has_or_open_browser("[data-id=object_body]", text: reply_content, timeout: 3000)
+    |> assert_has_or_open_browser("#message_threads", text: reply_content, timeout: 3000)
   end
 
   test "new message I receive appears in my inbox in real time", %{

@@ -16,41 +16,37 @@ defmodule Bonfire.UI.Messages.MessagesFlowTest do
   end
 
   describe "thread view" do
-    test "shows participant name in thread header", %{
+    test "shows participant name in thread list", %{
       conn: conn,
       me: me,
       recipient: recipient
     } do
       content = "hello from thread view test"
 
-      {:ok, message} =
+      {:ok, _message} =
         Messages.send(me, %{post_content: %{html_body: content}}, recipient)
-
-      thread_id = e(message, :replied, :thread_id, nil) || id(message)
 
       recipient_name =
         e(recipient, :profile, :name, nil) || e(recipient, :character, :username, "")
 
       conn
-      |> visit("/messages/#{thread_id}")
-      |> assert_has_or_open_browser("h3", text: recipient_name)
+      |> visit("/messages")
+      |> assert_has_or_open_browser("[data-id=thread_participants]", text: recipient_name)
     end
 
-    test "displays message content in thread", %{
+    test "displays message content preview in thread list", %{
       conn: conn,
       me: me,
       recipient: recipient
     } do
       content = "this is the message body in thread"
 
-      {:ok, message} =
+      {:ok, _message} =
         Messages.send(me, %{post_content: %{html_body: content}}, recipient)
 
-      thread_id = e(message, :replied, :thread_id, nil) || id(message)
-
       conn
-      |> visit("/messages/#{thread_id}")
-      |> assert_has_or_open_browser("article", text: content)
+      |> visit("/messages")
+      |> assert_has_or_open_browser("#message_threads", text: content)
     end
   end
 
@@ -58,22 +54,26 @@ defmodule Bonfire.UI.Messages.MessagesFlowTest do
     test "new direct message button is visible on messages page", %{conn: conn} do
       conn
       |> visit("/messages")
-      |> assert_has("button", text: "New direct message")
+      |> assert_has("button", text: "New Direct Message")
     end
 
-    test "visiting /messages/@username for a new contact shows new conversation", %{
+    test "clicking new direct message button opens contact picker", %{conn: conn} do
+      conn
+      |> visit("/messages")
+      |> click_button("New Direct Message")
+      |> assert_has("h3", text: "New message")
+    end
+
+    test "visiting /messages/@username for a new contact stays on that URL", %{
       conn: conn,
       recipient: recipient
     } do
       username = e(recipient, :character, :username, "")
 
-      recipient_name =
-        e(recipient, :profile, :name, nil) || e(recipient, :character, :username, "")
-
-      # The username route should show the new conversation view
+      # No existing thread -> no redirect; the DM composer opens via SmartInput portal.
       conn
       |> visit("/messages/@#{username}")
-      |> assert_has("h3", text: recipient_name)
+      |> assert_path("/messages/@#{username}")
     end
   end
 
