@@ -22,16 +22,16 @@
       </div>
       <div class="px-4">
         <form phx-change="Bonfire.Messages:search_threads">
-          <label class="input w-full flex items-center gap-2 bg-base-content/5 border-0 rounded-lg focus-within:none">
-            <#Icon iconify="ph:magnifying-glass-duotone" class="w-4 h-4 text-base-content/40" />
+          <label class="input w-full">
+            <#Icon iconify="ph:magnifying-glass-duotone" class="h-[1em] w-[1em] opacity-50" />
             <span class="sr-only">{l("Search messages")}</span>
             <input
-              type="text"
+              type="search"
               name="search"
               placeholder={l("Search messages...")}
               value={@search_term}
               phx-debounce="100"
-              class="grow bg-transparent border-0 focus:ring-0 text-sm placeholder:text-base-content/40"
+              class="grow"
             />
             <button
               :if={@search_term}

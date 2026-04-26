@@ -25,15 +25,15 @@
     {!-- Search input --}
     <div class="px-4 pb-2">
       <form phx-change="search_contacts" phx-target={@myself}>
-        <label class="input  w-full flex items-center gap-2 bg-base-content/5 border-0 rounded-lg focus-within:none">
-          <#Icon iconify="ph:magnifying-glass-duotone" class="w-4 h-4 text-base-content/40" />
+        <label class="input w-full">
+          <#Icon iconify="ph:magnifying-glass-duotone" class="h-[1em] w-[1em] opacity-50" />
           <input
-            type="text"
+            type="search"
             name="search"
             placeholder={l("Search people...")}
             value={@search_text}
             phx-debounce="300"
-            class="grow bg-transparent border-0 focus:ring-0 text-sm placeholder:text-base-content/40"
+            class="grow"
             autofocus
           />
         </label>
