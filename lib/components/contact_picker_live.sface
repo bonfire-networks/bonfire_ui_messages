@@ -1,6 +1,6 @@
 <div class="flex flex-col h-full">
   {!-- Header --}
-  <div class="sticky top-0 bg-base-100 z-50">
+  <div class="sticky top-0 md:bg-base-100 z-50">
     <div class="min-h-[50px] flex items-center gap-3 px-4 justify-between">
       <div class="flex items-center gap-3">
         <button
