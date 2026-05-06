@@ -15,6 +15,12 @@ defmodule Bonfire.UI.Messages.MessageThreadsLive do
     e(activity, :replied, :thread_id, nil) || id(e(activity, :object, nil))
   end
 
+  # Excludes own outbound messages — the sender's row should never show
+  # as unread to themselves, even before they've been seen by anyone.
+  def unread_for?(activity, context) do
+    !e(activity, :seen, nil) and e(activity, :subject_id, nil) != current_user_id(context)
+  end
+
   def filter_threads(edges, nil), do: edges
   def filter_threads(edges, ""), do: edges
 

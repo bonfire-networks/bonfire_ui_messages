@@ -39,6 +39,8 @@ defmodule Bonfire.UI.Messages.MessagesLive do
       if user_inbox_id, do: PubSub.subscribe(user_inbox_id, socket)
     end
 
+    socket = Bonfire.Social.Feeds.LiveHandler.mark_feed_seen_on_visit(:inbox, socket)
+
     {
       :ok,
       socket

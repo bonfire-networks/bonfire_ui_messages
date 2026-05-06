@@ -84,8 +84,8 @@
                e(activity, :replied, nil),
                e(activity, :object, nil) || e(activity, :object_id, nil),
                @filter_tab
-             )}}
-            {#match {tid, thread_permalink}}
+             ), unread_for?(activity, @__context__)}}
+            {#match {tid, thread_permalink, unread?}}
               <li
                 id={"thread-#{tid}"}
                 data-id={"thread_#{tid}"}
@@ -123,7 +123,11 @@
                 />
                 <!-- hide_thread_stats: true, -->
 
-                <div class="flex items-center gap-3 px-4 py-3">
+                <div
+                  class="flex items-center gap-3 px-4 py-3"
+                  phx-click={if unread?, do: "Bonfire.Messages:mark_thread_seen"}
+                  phx-value-activity_id={id(activity)}
+                >
                   {!-- AVATAR: 1-on-1 vs Group Thread vs Fallback --}
                   {#case e(activity, :thread_participant_count, 0)}
                     {#match 1}
@@ -163,10 +167,8 @@
                         data-id="thread_participants"
                         class={[
                           "text-[15px] truncate flex-1",
-                          "font-bold text-base-content":
-                            !e(activity, :seen, nil) && e(activity, :subject_id, nil) != current_user_id(@__context__),
-                          "font-medium text-base-content":
-                            !!e(activity, :seen, nil) || e(activity, :subject_id, nil) == current_user_id(@__context__)
+                          "font-bold text-base-content": unread?,
+                          "font-medium text-base-content": !unread?
                         ]}
                       >
                         {#case e(activity, :replied, :thread, :named, :name, nil)}
@@ -189,10 +191,8 @@
                     <div class="flex items-center gap-2 mt-0.5">
                       <p class={[
                         "text-sm truncate flex-1",
-                        "text-base-content/50":
-                          !!e(activity, :seen, nil) || e(activity, :subject_id, nil) == current_user_id(@__context__),
-                        "text-base-content/70":
-                          !e(activity, :seen, nil) && e(activity, :subject_id, nil) != current_user_id(@__context__)
+                        "text-base-content/50": !unread?,
+                        "text-base-content/70": unread?
                       ]}>
                         {!-- In group chats, show sender name prefix --}
                         {#if e(activity, :thread_participant_count, 0) > 1}
@@ -212,7 +212,9 @@
                       </p>
                       {!-- Unread dot --}
                       <span
-                        :if={!e(activity, :seen, nil) && e(activity, :subject_id, nil) != current_user_id(@__context__)}
+                        :if={unread?}
+                        data-id="unread_dot"
+                        data-thread-id={tid}
                         class="flex-none w-2.5 h-2.5 rounded-full bg-primary"
                       />
                     </div>

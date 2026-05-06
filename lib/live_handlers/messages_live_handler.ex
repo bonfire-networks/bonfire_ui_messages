@@ -100,6 +100,28 @@ defmodule Bonfire.Messages.LiveHandler do
     {:noreply, assign(socket, search_term: search_term)}
   end
 
+  def handle_event("mark_thread_seen", %{"activity_id" => activity_id}, socket)
+      when is_binary(activity_id) and activity_id != "" do
+    # `query_preload_seen` joins on `activity.id == seen_edge.object_id`, so
+    # we mark the listed activity (the latest message in the thread) — not
+    # the thread root, which is a different id once the thread has replies.
+    # Avoid `Threads.mark_all_seen`: it goes through `Threads.query` which
+    # excludes the root via `where replied.id != thread_id`, so it would
+    # never mark the root message of a fresh DM thread.
+    current_user = current_user_required!(socket)
+
+    apply_task(
+      :start_async,
+      fn -> Bonfire.Social.Seen.mark_seen(current_user, activity_id) end,
+      socket: socket,
+      id: "mark_thread_seen-#{activity_id}"
+    )
+
+    {:noreply, assign(socket, threads: flip_seen_in_threads(assigns(socket), activity_id))}
+  end
+
+  def handle_event("mark_thread_seen", _, socket), do: {:noreply, socket}
+
   def handle_event("toggle_contact_picker", _params, socket) do
     composing_new = !e(assigns(socket), :composing_new, false)
 
@@ -451,5 +473,24 @@ defmodule Bonfire.Messages.LiveHandler do
       end)
 
     Map.put(threads, :edges, thread_edges)
+  end
+
+  # Returns the original threads reference unchanged when nothing changed,
+  # so LiveView's diff is a no-op on repeat clicks.
+  defp flip_seen_in_threads(assigns, activity_id) do
+    threads = e(assigns, :threads, %{edges: []})
+    edges = e(threads, :edges, [])
+
+    {edges, changed?} =
+      Enum.map_reduce(edges, false, fn
+        %{activity: %{id: ^activity_id} = activity} = edge, _changed?
+        when activity.seen in [nil, false] ->
+          {%{edge | activity: Map.put(activity, :seen, true)}, true}
+
+        edge, changed? ->
+          {edge, changed?}
+      end)
+
+    if changed?, do: Map.put(threads, :edges, edges), else: threads
   end
 end
