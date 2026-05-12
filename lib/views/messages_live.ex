@@ -27,9 +27,10 @@ defmodule Bonfire.UI.Messages.MessagesLive do
 
     filter_tab = determine_filter_tab(params, current_user)
 
-    threads =
-      ed(assigns(socket), :threads, nil) ||
-        LiveHandler.list_threads(current_user, socket, tab: filter_tab)
+    # threads were previously loaded here for a sidebar; now handle_params owns the load
+    # threads =
+    #   ed(assigns(socket), :threads, nil) ||
+    #     LiveHandler.list_threads(current_user, socket, tab: filter_tab)
 
     # Subscribe to inbox updates
     if current_user do
@@ -47,7 +48,7 @@ defmodule Bonfire.UI.Messages.MessagesLive do
       |> assign(
         showing_within: :messages,
         back: true,
-        threads: threads,
+        threads: nil,
         page_title: l("Messages"),
         page: "messages",
         no_index: true,

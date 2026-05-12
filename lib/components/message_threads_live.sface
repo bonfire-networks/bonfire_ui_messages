@@ -82,7 +82,7 @@
           {#case {thread_id(activity),
              permalink(
                e(activity, :replied, nil),
-               e(activity, :object, nil) || e(activity, :object_id, nil),
+               e(activity, :object, nil) || e(activity, :object_id, nil) || activity,
                @filter_tab
              ), unread_for?(activity, @__context__)}}
             {#match {tid, thread_permalink, unread?}}
@@ -103,20 +103,21 @@
                   title_text={e(activity, :replied, :thread, :named, :name, nil) ||
                     e(activity, :thread_participants_names, nil) ||
                     l("Conversation")}
-                  modal_assigns={[
-                    object_id: tid,
-                    thread_id: tid,
-                    current_url: thread_permalink,
-                    show: true,
-                    showing_within: :thread,
-                    modal_component: Bonfire.UI.Social.ObjectThreadLive,
-                    modal_component_stateful?: true,
-                    loaded: true,
-                    sort_by: :latest_reply,
-                    sort_order: :asc,
-                    show_reply_input: true,
-                    thread_mode: :flat
-                  ]}
+                  modal_assigns={Bonfire.UI.Social.ActivityLive.thread_preview_modal_assigns(
+                    tid,
+                    id(e(activity, :object, nil)),
+                    id(activity),
+                    activity,
+                    e(activity, :object, nil),
+                    e(activity, :replied, :reply_to, nil)
+                  ) ++
+                    [
+                      current_url: thread_permalink,
+                      sort_by: :latest_reply,
+                      sort_order: :asc,
+                      show_reply_input: true,
+                      thread_mode: :flat
+                    ]}
                   root_assigns={[
                     page_title: l("Conversation")
                   ]}
