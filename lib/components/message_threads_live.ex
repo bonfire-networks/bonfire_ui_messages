@@ -2,6 +2,7 @@ defmodule Bonfire.UI.Messages.MessageThreadsLive do
   use Bonfire.UI.Common.Web, :stateless_component
   alias Bonfire.Messages.LiveHandler
 
+  prop parent_id, :string, default: nil
   prop threads, :any, default: nil
   prop thread_id, :string, default: nil
   prop context, :any, default: nil

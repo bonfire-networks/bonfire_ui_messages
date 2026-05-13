@@ -89,6 +89,7 @@
                 user_id={id(user)}
                 wrapper_class="border-0 avatar !flex w-10 h-10 flex-none"
                 class="w-10 h-10 rounded-full object-cover"
+                is_remote={false}
               />
               <div class="flex flex-col items-start min-w-0">
                 <span class="text-sm font-medium truncate">{e(user, :profile, :name, nil) || e(user, :character, :username, l("someone"))}</span>

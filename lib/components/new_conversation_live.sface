@@ -17,6 +17,7 @@
               class="w-8 h-8 rounded-full object-cover"
               src={Media.avatar_url(@compose_user)}
               user_id={id(@compose_user)}
+              is_remote={false}
             />
           {/if}
         {/if}
