@@ -61,11 +61,11 @@ defmodule Bonfire.UI.Messages.MessagesLive do
         filter_tab: filter_tab,
         search_term: nil,
         composing_new: false,
-        selected_recipients: [],
-        page_header_aside: [
-          {Bonfire.UI.Messages.HeaderAsideDmLive,
-           [feed_id: e(current_user, :character, :inbox_id, nil) || feed_id]}
-        ]
+        selected_recipients: []
+        # page_header_aside: [
+        #   {Bonfire.UI.Messages.HeaderAsideDmLive,
+        #    [feed_id: e(current_user, :character, :inbox_id, nil) || feed_id]}
+        # ]
       )
     }
   end
