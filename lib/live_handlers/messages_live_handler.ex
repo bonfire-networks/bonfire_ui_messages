@@ -422,7 +422,8 @@ defmodule Bonfire.Messages.LiveHandler do
     # Preload tags (DM recipients) on thread edges so list_participants_for_threads can extract them
     thread_edges =
       e(threads, :edges, [])
-      |> repo().maybe_preload(activity: [object: [tags: [:character, profile: :icon]]])
+      # `character.peered` for DM-recipient locality (is_local? in the thread list)
+      |> repo().maybe_preload(activity: [object: [tags: [profile: :icon, character: [:peered]]]])
 
     # Single batch query for all threads' participants (eliminates N+1)
     # current_user excluded at DB level; known tag recipients excluded inside list_participants_for_threads
