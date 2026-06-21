@@ -181,7 +181,12 @@
                             {e(activity, :thread_participants_names, nil) ||
                               e(activity, :subject, :profile, :name, nil) ||
                               e(activity, :subject, :character, :username, nil) ||
-                              l("Someone")}
+                              l("Someone")}{#if e(activity, :thread_participant_count, 0) > 5}
+                              +{e(
+                                activity,
+                                :thread_participant_count,
+                                0
+                              ) - 5}{/if}
                           {#match thread_name}
                             {thread_name}
                         {/case}

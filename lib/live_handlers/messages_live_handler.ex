@@ -427,12 +427,13 @@ defmodule Bonfire.Messages.LiveHandler do
 
     # Single batch query for all threads' participants (eliminates N+1)
     # current_user excluded at DB level; known tag recipients excluded inside list_participants_for_threads
+    # Load the (semi)full (bounded) participant list per thread; the display cap (top 5 + reveal
+    # the rest) is done at render time by the shared `ParticipantsListLive` component. #1988
     participants_by_thread =
       Bonfire.Social.Threads.list_participants_for_threads(
         thread_edges,
         current_user: current_user,
         skip_boundary_check: true,
-        limit: 5,
         exclude_subject_ids: [current_user_id]
       )
 
@@ -446,24 +447,19 @@ defmodule Bonfire.Messages.LiveHandler do
 
           count = length(other_participants)
 
+          # The thread-list row title is an inline string (not a vertical list), so it shows
+          # up to 5 names + a more count ("+N"); search (`filter_threads`) matches
+          # this same string. Uses the shared `Threads.participants_names` formatter (#1988).
           names =
             case other_participants do
-              [] ->
-                nil
-
-              others ->
-                Enum.map_join(others, " & ", fn p ->
-                  e(p, :profile, :name, nil) ||
-                    e(p, :character, :username, nil) ||
-                    l("someone")
-                end)
+              [] -> nil
+              others -> Bonfire.Social.Threads.participants_names(Enum.take(others, 5))
             end
 
           %{
             edge
             | activity:
                 activity
-                # |> Map.put(:thread_participants, other_participants) # not used in component right now
                 |> Map.put(:thread_other_participant, if(count == 1, do: hd(other_participants)))
                 |> Map.put(:thread_participant_count, count)
                 |> Map.put(:thread_participants_names, names)
