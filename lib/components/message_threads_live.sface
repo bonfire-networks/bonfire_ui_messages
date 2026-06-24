@@ -245,6 +245,7 @@
         live_handler={Bonfire.Messages}
         page_info={e(@threads, :page_info, nil)}
         context={@context}
+        infinite_scroll
       />
     {#else}
       <div class="flex flex-col items-center gap-3 my-12 px-6 text-center">
