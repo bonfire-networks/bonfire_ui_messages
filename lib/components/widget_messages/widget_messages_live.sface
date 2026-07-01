@@ -4,14 +4,14 @@
 >
   <:action>
     <LinkLive
-      class="text-xs normal-case btn btn-xs btn-outline"
+      class="text-xs normal-case btn btn-sm btn-outline"
       to={path(Bonfire.Data.Social.Message)}
     >
       {l("View more")}
     </LinkLive>
   </:action>
 
-  <ul class="divide-y menu bg-base-100 divide-base-300">
+  <ul class="menu bg-base-100 divide-base-300">
     <li :for={%{activity: activity} <- @feed}>
       <LinkLive to={path(Bonfire.Data.Social.Message, e(activity, :object_id, nil))} class="block">
         <div class="flex items-center">

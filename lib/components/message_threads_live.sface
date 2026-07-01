@@ -6,24 +6,19 @@
       selected_recipients={@selected_recipients}
     />
   {#else}
-    <div class="sticky top-0 md:bg-base-100 z-50">
-      <div class="py-4 flex justify-between items-center px-4">
-        <!-- <h3 class="text-sm font-bold flex-1">{l("Messages")}</h3> -->
-        <div class="flex items-center gap-2 w-full">
-          <button
-            phx-click="Bonfire.Messages:toggle_contact_picker"
-            class="btn btn-primary w-full"
-            aria-label={l("New message")}
-          >
-            <#Icon iconify="tabler:mail-plus" class="w-5 h-5" />
-            <span>{l("New Direct Message")}</span>
-          </button>
-        </div>
-      </div>
-      <div class="px-4">
-        <form phx-change="Bonfire.Messages:search_threads">
-          <label class="input w-full">
-            <#Icon iconify="ph:magnifying-glass-duotone" class="h-[1em] w-[1em] opacity-50" />
+    <div class="">
+      <div class="flex items-center px-3 gap-2 pt-1">
+        <button
+          phx-click="Bonfire.Messages:toggle_contact_picker"
+          class="btn btn-sm btn-primary flex-1"
+          aria-label={l("New message")}
+        >
+          <#Icon iconify="tabler:mail-plus" class="w-5 h-5" />
+          <span>{l("New Direct Message")}</span>
+        </button>
+        <form class="flex-1" phx-change="Bonfire.Messages:search_threads">
+          <label class="input-sm border-hair border-secondary input w-full">
+            <#Icon iconify="ph:magnifying-glass-duotone" class="w-5 h-5 text-secondary" />
             <span class="sr-only">{l("Search messages")}</span>
             <input
               type="search"
@@ -38,7 +33,7 @@
               type="button"
               phx-click="Bonfire.Messages:search_threads"
               phx-value-search=""
-              class="btn btn-ghost btn-circle btn-xs text-base-content/40 hover:text-base-content"
+              class="btn btn-ghost btn-circle btn-sm text-base-content/40 hover:text-base-content"
             >
               <#Icon iconify="ph:x-duotone" class="w-4 h-4" />
             </button>
@@ -46,14 +41,14 @@
         </form>
       </div>
       {!-- Message Tabs --}
-      <div role="tablist" class="px-3 gap-1.5 py-2 flex">
+      <div role="tablist" class="bg-base-200  border-y-hair border-secondary gap-3 py-1 px-3 flex">
         <LinkLive
           to="/messages?tab=all"
           role="tab"
           class={[
             "btn btn-sm rounded-full",
             "btn-active": (@filter_tab || "all") == "all",
-            "text-base-content/70": (@filter_tab || "all") != "all"
+            "text-muted": (@filter_tab || "all") != "all"
           ]}
         >{l("All")}</LinkLive>
         <LinkLive
@@ -62,7 +57,7 @@
           class={[
             "btn btn-sm rounded-full",
             "btn-active": @filter_tab == "followed_only",
-            "text-base-content/70": @filter_tab != "followed_only"
+            "text-muted": @filter_tab != "followed_only"
           ]}
         >{l("Followed only")}</LinkLive>
         <LinkLive
@@ -71,13 +66,13 @@
           class={[
             "btn btn-sm rounded-full",
             "btn-active": @filter_tab == "not_followed",
-            "text-base-content/70": @filter_tab != "not_followed"
+            "text-muted": @filter_tab != "not_followed"
           ]}
         >{l("Other")}</LinkLive>
       </div>
     </div>
     {#if e(@threads, :edges, []) != []}
-      <ul id="message_threads" class="flex mt-2 flex-col">
+      <ul id="message_threads" class="flex divide-hair divide-secondary flex-col">
         {#for %{activity: activity} <- filter_threads(e(@threads, :edges, []), @search_term)}
           {#case {thread_id(activity),
              permalink(
@@ -92,7 +87,7 @@
                 data-href={thread_permalink}
                 phx-hook="Bonfire.UI.Common.PreviewContentLive#PreviewActivity"
                 class={[
-                  "hover:bg-base-content/5 relative transition-colors duration-150 cursor-pointer previewable_activity",
+                  "bg-base-100 cursor-pointer previewable_activity",
                   "message-active": @thread_id == tid
                 ]}
               >
@@ -198,21 +193,17 @@
                     </div>
 
                     {!-- Message preview + unread dot --}
-                    <div class="flex items-center gap-2 mt-0.5">
-                      <p class={[
-                        "text-sm truncate flex-1",
-                        "text-base-content/50": !unread?,
-                        "text-base-content/70": unread?
-                      ]}>
+                    <div class="flex items-center gap-2">
+                      <p class="text-sm truncate flex-1">
                         {!-- In group chats, show sender name prefix --}
                         {#if e(activity, :thread_participant_count, 0) > 1}
-                          <span class="font-medium text-base-content/70">
+                          <span class="font-medium text-muted">
                             {if e(activity, :subject_id, nil) == current_user_id(@__context__),
                               do: l("Me"),
                               else: e(activity, :subject, :profile, :name, nil)}:
                           </span>{" "}
                         {#elseif e(activity, :subject_id, nil) == current_user_id(@__context__)}
-                          <span class="font-medium text-base-content/70">{l("Me")}:</span>{" "}
+                          <span class="font-medium text-muted">{l("Me")}:</span>{" "}
                         {/if}
                         {Text.text_only(
                           e(activity, :object, :post_content, :name, nil) ||
