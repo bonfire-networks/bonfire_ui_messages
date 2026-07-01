@@ -4,7 +4,7 @@ defmodule Bonfire.UI.Messages.MessagesLive do
   alias Bonfire.Messages.LiveHandler
   import Untangle
 
-  declare_extension("UI for messages",
+  declare_extension(l("UI for messages"),
     icon: "ph:tray-duotone",
     emoji: "✉️",
     description: l("User interface for writing and reading private messages.")
