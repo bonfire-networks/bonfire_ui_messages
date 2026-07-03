@@ -282,7 +282,7 @@ defmodule Bonfire.Messages.LiveHandler do
     # Use config pagination limit unless overridden
     default_limit = Bonfire.Common.Config.get(:default_pagination_limit, 8)
 
-    # Handle tab-based filtering 
+    # Handle tab-based filtering
     tab = opts[:tab] || "all"
 
     relationship_filter =
@@ -410,7 +410,7 @@ defmodule Bonfire.Messages.LiveHandler do
      |> Bonfire.UI.Common.SmartInput.LiveHandler.reset_input()
      |> assign_flash(
        :info,
-       "<a href='/discussion/#{thread_id}' class='link link-hover font-semibold'>#{l("Sent!")} →</a>"
+       "<a href='/discussion/#{thread_id}' class='link link-hover font-medium'>#{l("Sent!")} →</a>"
      )}
   end
 
