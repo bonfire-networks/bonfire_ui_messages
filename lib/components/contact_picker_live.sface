@@ -26,7 +26,7 @@
     <div class="pb-2">
       <form phx-change="search_contacts" phx-target={@myself}>
         <label class="input-sm border-hair border-secondary input w-full">
-          <#Icon iconify="ph:magnifying-glass-duotone" class="w-5 h-5 text-secondary" />
+          <#Icon iconify="ph:magnifying-glass-duotone" class="w-5 h-5 text-muted" />
           <input
             type="search"
             name="search"

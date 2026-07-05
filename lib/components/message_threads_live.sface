@@ -10,15 +10,15 @@
       <div class="flex items-center px-3 gap-2 border-t-hair border-secondary">
         <button
           phx-click="Bonfire.Messages:toggle_contact_picker"
-          class="btn btn-sm btn-primary flex-1"
+          class="btn btn-primary flex-1"
           aria-label={l("New message")}
         >
           <#Icon iconify="tabler:mail-plus" class="w-5 h-5" />
           <span>{l("New Direct Message")}</span>
         </button>
         <form class="flex-1" phx-change="Bonfire.Messages:search_threads">
-          <label class="input-sm border-hair border-secondary input w-full">
-            <#Icon iconify="ph:magnifying-glass-duotone" class="w-5 h-5 text-secondary" />
+          <label class="border-hair border-secondary input w-full">
+            <#Icon iconify="ph:magnifying-glass-duotone" class="w-5 h-5 text-muted" />
             <span class="sr-only">{l("Search messages")}</span>
             <input
               type="search"
