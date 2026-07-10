@@ -14,7 +14,7 @@
           aria-label={l("New message")}
         >
           <#Icon iconify="tabler:mail-plus" class="w-5 h-5" />
-          <span>{l("New Direct Message")}</span>
+          <span>{l("New Message")}</span>
         </button>
         <form class="flex-1" phx-change="Bonfire.Messages:search_threads">
           <label class="border-hair border-secondary input w-full">
@@ -47,7 +47,7 @@
           role="tab"
           class={[
             "btn btn-sm rounded-full",
-            "btn-active": (@filter_tab || "all") == "all",
+            "!font-medium": (@filter_tab || "all") == "all",
             "text-muted": (@filter_tab || "all") != "all"
           ]}
         >{l("All")}</LinkLive>
@@ -56,7 +56,7 @@
           role="tab"
           class={[
             "btn btn-sm rounded-full",
-            "btn-active": @filter_tab == "followed_only",
+            "!font-medium": @filter_tab == "followed_only",
             "text-muted": @filter_tab != "followed_only"
           ]}
         >{l("Followed only")}</LinkLive>
@@ -65,7 +65,7 @@
           role="tab"
           class={[
             "btn btn-sm rounded-full",
-            "btn-active": @filter_tab == "not_followed",
+            "!font-medium": @filter_tab == "not_followed",
             "text-muted": @filter_tab != "not_followed"
           ]}
         >{l("Other")}</LinkLive>
