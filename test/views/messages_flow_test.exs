@@ -54,13 +54,13 @@ defmodule Bonfire.UI.Messages.MessagesFlowTest do
     test "new direct message button is visible on messages page", %{conn: conn} do
       conn
       |> visit("/messages")
-      |> assert_has("button", text: "New Direct Message")
+      |> assert_has("button", text: "New Message")
     end
 
     test "clicking new direct message button opens contact picker", %{conn: conn} do
       conn
       |> visit("/messages")
-      |> click_button("New Direct Message")
+      |> click_button("New Message")
       |> assert_has("h3", text: "New message")
     end
 
