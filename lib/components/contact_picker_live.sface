@@ -94,7 +94,7 @@
                 />
                 <div class="flex flex-col items-start min-w-0">
                   <span class="text-sm font-medium truncate">{e(user, :profile, :name, nil) || e(user, :character, :username, l("someone"))}</span>
-                  <span class="text-xs text-base-content/50 truncate">@{e(user, :character, :username, "")}</span>
+                  <span class="text-xs text-muted truncate">@{e(user, :character, :username, "")}</span>
                 </div>
               </button>
             {/for}
@@ -112,7 +112,7 @@
           {/if}
         {#else}
           <div class="flex flex-col items-center gap-2 py-8 text-center px-6">
-            <p class="text-sm text-base-content/50">{empty_message}</p>
+            <p class="text-sm text-muted">{empty_message}</p>
           </div>
         {/if}
     {/case}

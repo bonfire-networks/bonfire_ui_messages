@@ -188,7 +188,7 @@
                       </span>
                       <time
                         datetime={DatesTimes.date_from_pointer(activity)}
-                        class="text-xs text-base-content/50 flex-none whitespace-nowrap"
+                        class="text-xs text-muted flex-none whitespace-nowrap"
                       >{DatesTimes.date_from_now(activity)}</time>
                     </div>
 
@@ -228,7 +228,7 @@
 
       {#if @search_term && filter_threads(e(@threads, :edges, []), @search_term) == []}
         <div class="flex flex-col items-center gap-2 py-8 text-center">
-          <p class="text-sm text-base-content/50">{l("No conversations match your search")}</p>
+          <p class="text-sm text-muted">{l("No conversations match your search")}</p>
         </div>
       {/if}
 
@@ -245,7 +245,7 @@
           <#Icon iconify="ph:tray-duotone" class="w-8 h-8 text-base-content/30" />
         </div>
         <h3 class="text-lg font-bold">{l("Welcome to your inbox")}</h3>
-        <p class="text-sm text-base-content/50 max-w-[260px]">
+        <p class="text-sm text-muted max-w-[260px]">
           {l("Drop a line, write a direct message with other users in the fediverse.")}
         </p>
         <button

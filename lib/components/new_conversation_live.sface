@@ -35,7 +35,7 @@
         <#Icon iconify="ph:tray-duotone" class="w-8 h-8 text-base-content/30" />
       </div>
       {#if recipient_names(@recipients, @compose_user)}
-        <p class="text-base-content/50 text-sm">
+        <p class="text-muted text-sm">
           {l("Start a conversation with %{name}", name: recipient_names(@recipients, @compose_user))}
         </p>
       {/if}
