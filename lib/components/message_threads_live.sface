@@ -7,7 +7,7 @@
     />
   {#else}
     <div class="">
-      <div class="flex items-center px-3 gap-2 border-t-hair border-secondary">
+      <div class="flex items-center px-3 gap-2 py-2">
         <button
           phx-click="Bonfire.Messages:toggle_contact_picker"
           class="btn btn-primary flex-1"
