@@ -7,16 +7,21 @@
     />
   {#else}
     <div class="">
-      <div class="flex items-center px-3 gap-2 py-2">
+      <div class="group/message-search grid grid-cols-[minmax(3rem,1fr)_minmax(0,1fr)] items-center px-3 gap-2 py-2 transition-[grid-template-columns] duration-200 ease-in-out motion-reduce:transition-none has-[input:focus]:grid-cols-[minmax(3rem,0fr)_minmax(0,6fr)]">
         <button
           phx-click="Bonfire.Messages:toggle_contact_picker"
-          class="btn btn-primary flex-1"
+          class="btn btn-primary w-full min-w-0 overflow-hidden"
           aria-label={l("New message")}
         >
-          <#Icon iconify="tabler:mail-plus" class="w-5 h-5" />
-          <span>{l("New Message")}</span>
+          <#Icon iconify="tabler:mail-plus" class="w-5 h-5 shrink-0" />
+          <span class="max-w-40 overflow-hidden whitespace-nowrap transition-[max-width,opacity] duration-200 ease-in-out motion-reduce:transition-none group-has-[input:focus]/message-search:max-w-0 group-has-[input:focus]/message-search:opacity-0">
+            {l("New Message")}
+          </span>
         </button>
-        <form class="flex-1" phx-change="Bonfire.Messages:search_threads">
+        <form
+          class="w-full min-w-0"
+          phx-change="Bonfire.Messages:search_threads"
+        >
           <label class="border-hair border-secondary input w-full">
             <#Icon iconify="ph:magnifying-glass-duotone" class="w-5 h-5 text-muted" />
             <span class="sr-only">{l("Search messages")}</span>
