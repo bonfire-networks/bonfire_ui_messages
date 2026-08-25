@@ -108,11 +108,11 @@ defmodule Bonfire.Messages.LiveHandler do
     # Avoid `Threads.mark_all_seen`: it goes through `Threads.query` which
     # excludes the root via `where replied.id != thread_id`, so it would
     # never mark the root message of a fresh DM thread.
-    current_user = current_user_required!(socket)
+    _current_user = current_user_required!(socket)
 
     apply_task(
       :start_async,
-      fn -> Bonfire.Social.Seen.mark_seen(current_user, activity_id) end,
+      fn -> Bonfire.Social.Seen.mark_seen(socket, activity_id) end,
       socket: socket,
       id: "mark_thread_seen-#{activity_id}"
     )
