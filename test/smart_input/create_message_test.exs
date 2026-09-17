@@ -187,8 +187,9 @@ defmodule Bonfire.UI.Messages.CreateMessageTest do
       |> assert_has_or_open_browser("#message_threads", text: followed_content)
       |> refute_has("#message_threads", text: unfollowed_content)
 
-      # Switch back to All tab - should see both messages again
-      |> click_link("All")
+      # Switch back to All tab - should see both messages again.
+      # Scoped by href because `click_link/2` matches text as a SUBSTRING, and the nav's "All groups" link matches "All" just as well as the tab does.
+      |> click_link("a[href='/messages?tab=all']", "All")
       |> assert_has_or_open_browser("#message_threads", text: followed_content)
       |> assert_has("#message_threads", text: unfollowed_content)
     end
