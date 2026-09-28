@@ -199,7 +199,7 @@ defmodule Bonfire.Messages.LiveHandler do
     )
 
     # Also update PersistentLive's socket so @to_circles flows through the template
-    persistent_pid = e(assigns(socket), :__context__, :child_pid, nil)
+    persistent_pid = e(assigns(socket), :__context__, :persistent_child_pid, nil)
 
     if persistent_pid do
       send(
