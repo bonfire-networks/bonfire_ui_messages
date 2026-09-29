@@ -128,6 +128,8 @@ defmodule Bonfire.UI.Messages.MessagesFlowTest do
   end
 
   describe "not_followed tab" do
+    @describetag skip:
+                   "the Other tab was replaced by the Hidden tab, tested in create_message_test.exs"
     test "shows only messages from unfollowed users", %{
       conn: conn,
       me: me,

@@ -177,28 +177,35 @@ defmodule Bonfire.UI.Messages.MessagesLive do
   end
 
   # Helper function to determine filter tab based on params and user settings
+  # Inbox (what the "Hide notifications and messages from" switches leave), or Hidden (what they keep out), which only someone hiding something is offered, as the notifications Hidden chip. Old `all` / `followed_only` / `not_followed` links land on Inbox
   defp determine_filter_tab(params, current_user) do
-    case params["tab"] do
-      nil ->
-        dm_privacy =
-          Bonfire.Common.Settings.get([Bonfire.Messages, :dm_privacy], "everyone",
-            current_user: current_user
-          )
+    if params["tab"] == "hidden" and
+         Bonfire.UI.Messages.MessageThreadsLive.hides_any?(current_user: current_user),
+       do: "hidden",
+       else: "inbox"
 
-        case to_string(dm_privacy) do
-          "followed_only" -> "followed_only"
-          _ -> "all"
-        end
-
-      "all" ->
-        "all"
-
-      "followed_only" ->
-        "followed_only"
-
-      explicit_tab ->
-        explicit_tab
-    end
+    # replaced by the audience switches, which notifications share
+    # case params["tab"] do
+    #   nil ->
+    #     dm_privacy =
+    #       Bonfire.Common.Settings.get([Bonfire.Messages, :dm_privacy], "everyone",
+    #         current_user: current_user
+    #       )
+    #
+    #     case to_string(dm_privacy) do
+    #       "followed_only" -> "followed_only"
+    #       _ -> "all"
+    #     end
+    #
+    #   "all" ->
+    #     "all"
+    #
+    #   "followed_only" ->
+    #     "followed_only"
+    #
+    #   explicit_tab ->
+    #     explicit_tab
+    # end
   end
 
   def handle_event("remove", %{data: %{"field" => field, "id" => id}}, socket) do

@@ -282,22 +282,23 @@ defmodule Bonfire.Messages.LiveHandler do
     # Use config pagination limit unless overridden
     default_limit = Bonfire.Common.Config.get(:default_pagination_limit, 8)
 
-    # Handle tab-based filtering
-    tab = opts[:tab] || "all"
-
-    relationship_filter =
-      case tab do
-        # Show only messages from followed users
-        "followed_only" -> :followed_only
-        # Show messages from users not followed
-        "not_followed" -> :not_followed
-        # Show all messages
-        _ -> :all
-      end
+    # the Hidden tab lists what the "Hide notifications and messages from" switches keep out of Inbox
+    # replaced the relationship tabs (All / Followed only / Other):
+    # tab = opts[:tab] || "all"
+    #
+    # relationship_filter =
+    #   case tab do
+    #     # Show only messages from followed users
+    #     "followed_only" -> :followed_only
+    #     # Show messages from users not followed
+    #     "not_followed" -> :not_followed
+    #     # Show all messages
+    #     _ -> :all
+    #   end
 
     opts =
       opts
-      |> Keyword.put(:relationship_filter, relationship_filter)
+      |> Keyword.put(:hidden, opts[:tab] == "hidden")
       # We're not using show_filtered anymore
       |> Keyword.put(:show_filtered, false)
 

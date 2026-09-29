@@ -7,7 +7,7 @@ defmodule Bonfire.UI.Messages.MessageThreadsLive do
   prop thread_id, :string, default: nil
   prop context, :any, default: nil
   prop showing_within, :atom, default: nil
-  prop filter_tab, :string, default: "all"
+  prop filter_tab, :string, default: "inbox"
   prop search_term, :string, default: nil
   prop composing_new, :boolean, default: false
   prop selected_recipients, :list, default: []
@@ -54,10 +54,16 @@ defmodule Bonfire.UI.Messages.MessageThreadsLive do
 
   def messages_back_url(filter_tab) do
     case filter_tab do
-      "followed_only" -> "/messages?tab=followed_only"
-      "not_followed" -> "/messages?tab=not_followed"
-      _ -> "/messages?tab=all"
+      "hidden" -> "/messages?tab=hidden"
+      _ -> "/messages"
     end
+  end
+
+  @doc "Whether this person hides any audience, which is when the Hidden tab has anything to show."
+  def hides_any?(context) do
+    Bonfire.Common.Utils.maybe_apply(Bonfire.Social.Notifications, :hidden_audiences, [context],
+      fallback_return: []
+    ) != []
   end
 
   def group_avatar_color(thread_id) when is_binary(thread_id) do

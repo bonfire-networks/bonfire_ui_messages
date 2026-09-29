@@ -110,7 +110,110 @@ defmodule Bonfire.UI.Messages.CreateMessageTest do
     |> assert_has_or_open_browser("#message_threads", text: content)
   end
 
-  describe "DM filtering tabs" do
+  # the "All" / "Followed only" / "Other" tabs and the `dm_privacy` setting were replaced by the "Hide notifications and messages from" switches, with a Inbox tab and a Hidden tab: the same cases are tested in "Inbox and Hidden tabs" below
+  describe "Inbox and Hidden tabs" do
+    setup %{me: me, recipient: friend, account: account} do
+      stranger = fake_user!(account)
+      {:ok, _follow} = Follows.follow(me, friend)
+
+      {:ok, _} = Messages.send(friend, %{post_content: %{html_body: "message from a friend"}}, me)
+
+      {:ok, _} =
+        Messages.send(stranger, %{post_content: %{html_body: "message from a stranger"}}, me)
+
+      :ok
+    end
+
+    defp hiding_strangers(me, account) do
+      me =
+        current_user(
+          Bonfire.Common.Settings.put(
+            Bonfire.Social.Notifications.audience_key(:not_followed),
+            :hide,
+            current_user: me
+          )
+        )
+
+      conn(user: me, account: account)
+    end
+
+    test "with nothing hidden, Inbox has every conversation and there is no Hidden tab", %{
+      conn: conn
+    } do
+      conn
+      |> visit("/messages")
+      |> assert_has_or_open_browser("#message_threads", text: "message from a friend")
+      |> assert_has("#message_threads", text: "message from a stranger")
+      |> assert_has("#messages-tab-inbox")
+      |> refute_has("#messages-tab-hidden")
+    end
+
+    test "with people you don't follow hidden, Inbox leaves out a stranger and Hidden has only them",
+         %{me: me, account: account} do
+      conn = hiding_strangers(me, account)
+
+      conn
+      |> visit("/messages")
+      |> assert_has_or_open_browser("#message_threads", text: "message from a friend")
+      |> refute_has("#message_threads", text: "message from a stranger")
+
+      conn
+      |> visit("/messages?tab=hidden")
+      |> assert_has_or_open_browser("#message_threads", text: "message from a stranger")
+      |> refute_has("#message_threads", text: "message from a friend")
+    end
+
+    # as the notifications Hidden chip: a view someone isn't offered lands on the normal one, rather than a page that would always be empty
+    test "with nothing hidden, the hidden tab's URL shows Inbox, and no Hidden tab", %{conn: conn} do
+      conn
+      |> visit("/messages?tab=hidden")
+      |> assert_has("#messages-tab-inbox[aria-current=page]")
+      |> refute_has("#messages-tab-hidden")
+      |> assert_has_or_open_browser("#message_threads", text: "message from a friend")
+      |> assert_has("#message_threads", text: "message from a stranger")
+    end
+
+    test "flipping a switch in the panel brings the Hidden tab, and flipping it back takes it away",
+         %{conn: conn} do
+      name = Bonfire.Social.Notifications.audiences()[:not_followed][:name]
+
+      conn
+      |> visit("/messages")
+      |> refute_has("#messages-tab-hidden")
+      |> within("#messages-audiences-panel", fn session ->
+        check(session, "#notification-audience-not_followed", name)
+      end)
+      |> assert_has("#messages-tab-hidden")
+      |> within("#messages-audiences-panel", fn session ->
+        uncheck(session, "#notification-audience-not_followed", name)
+      end)
+      |> refute_has("#messages-tab-hidden")
+    end
+
+    test "the preferences button beside the tabs holds the same switches as notifications", %{
+      conn: conn
+    } do
+      conn
+      |> visit("/messages")
+      |> assert_has("#messages-audiences-toggle[aria-controls=messages-audiences-panel]")
+      |> assert_has("#messages-audiences-panel #notification-audience-not_followed")
+    end
+
+    test "clicking between Inbox and Hidden switches the list", %{me: me, account: account} do
+      hiding_strangers(me, account)
+      |> visit("/messages")
+      |> assert_has_or_open_browser("#message_threads", text: "message from a friend")
+      |> click_link("#messages-tab-hidden", "Hidden")
+      |> assert_has_or_open_browser("#message_threads", text: "message from a stranger")
+      |> refute_has("#message_threads", text: "message from a friend")
+      |> click_link("#messages-tab-inbox", "Inbox")
+      |> assert_has_or_open_browser("#message_threads", text: "message from a friend")
+      |> refute_has("#message_threads", text: "message from a stranger")
+    end
+  end
+
+  describe "DM filtering tabs (replaced, see above)" do
+    @describetag skip: "replaced by the Inbox and Hidden tabs"
     test "All tab shows all messages by default", %{
       conn: conn,
       me: me,
@@ -195,7 +298,8 @@ defmodule Bonfire.UI.Messages.CreateMessageTest do
     end
   end
 
-  describe "DM privacy settings integration" do
+  describe "DM privacy settings integration (replaced, see Inbox and Hidden tabs)" do
+    @describetag skip: "`dm_privacy` was replaced by the audience switches"
     test "DM privacy setting 'followed_only' makes Followed Only the default tab", %{
       conn: conn,
       me: me,
@@ -261,7 +365,8 @@ defmodule Bonfire.UI.Messages.CreateMessageTest do
     end
   end
 
-  describe "tab state preservation" do
+  describe "tab state preservation (replaced, see Inbox and Hidden tabs)" do
+    @describetag skip: "the Followed only tab was replaced by the Hidden tab"
     test "followed_only tab filter persists across visits", %{
       conn: conn,
       me: me,

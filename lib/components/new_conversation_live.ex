@@ -3,7 +3,7 @@ defmodule Bonfire.UI.Messages.NewConversationLive do
 
   prop recipients, :list, default: []
   prop compose_user, :any, default: nil
-  prop filter_tab, :string, default: "all"
+  prop filter_tab, :string, default: "inbox"
 
   def recipient_names(recipients, compose_user) do
     case recipients do

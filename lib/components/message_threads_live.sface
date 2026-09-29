@@ -43,7 +43,61 @@
         </form>
       </div>
       {!-- Message Tabs --}
-      <div role="tablist" class="bg-base-200  border-y-hair border-secondary gap-3 py-1 px-3 flex">
+      {!-- Inbox, and Hidden for what the "Hide notifications and messages from" switches keep out, offered only to someone who hides something. They replace the relationship tabs (All / Followed only / Other) --}
+      <div class="bg-base-200 border-y-hair border-secondary py-1 px-3 flex items-center gap-3">
+        <div role="tablist" class="flex gap-3 flex-1">
+          {!-- id and role through `opts`, since a plain link renders only those --}
+          <LinkLive
+            to="/messages"
+            opts={
+              id: "messages-tab-inbox",
+              role: "tab",
+              "aria-current": if(@filter_tab != "hidden", do: "page")
+            }
+            class={[
+              "btn btn-sm rounded-full",
+              "!font-medium": @filter_tab != "hidden",
+              "text-muted": @filter_tab == "hidden"
+            ]}
+          >{l("Inbox")}</LinkLive>
+          <LinkLive
+            :if={hides_any?(@__context__)}
+            to="/messages?tab=hidden"
+            opts={
+              id: "messages-tab-hidden",
+              role: "tab",
+              "aria-current": if(@filter_tab == "hidden", do: "page")
+            }
+            class={[
+              "btn btn-sm rounded-full",
+              "!font-medium": @filter_tab == "hidden",
+              "text-muted": @filter_tab != "hidden"
+            ]}
+          >{l("Hidden")}</LinkLive>
+        </div>
+        {!-- the same switches as in notification preferences and Privacy & Safety, opened here rather than linked to --}
+        <button
+          id="messages-audiences-toggle"
+          type="button"
+          class="btn btn-ghost btn-circle btn-sm"
+          aria-expanded="false"
+          aria-controls="messages-audiences-panel"
+          phx-click={JS.toggle(to: "#messages-audiences-panel")
+          |> JS.toggle_attribute({"aria-expanded", "true", "false"}, to: "#messages-audiences-toggle")}
+        >
+          <#Icon iconify="ph:sliders-horizontal" class="size-5" />
+          <span class="sr-only">{l("Message preferences")}</span>
+        </button>
+      </div>
+      <section
+        id="messages-audiences-panel"
+        aria-label={l("Message preferences")}
+        style="display: none;"
+        class="p-4 border-b-hair border-secondary"
+      >
+        <StatelessComponent module={maybe_component(Bonfire.UI.Social.HiddenAudiencesLive, @__context__)} />
+      </section>
+      {!-- <div role="tablist" class="bg-base-200  border-y-hair border-secondary gap-3 py-1 px-3 flex">
         <LinkLive
           to="/messages?tab=all"
           role="tab"
@@ -71,7 +125,7 @@
             "text-muted": @filter_tab != "not_followed"
           ]}
         >{l("Other")}</LinkLive>
-      </div>
+      </div> --}
     </div>
     {#if e(@threads, :edges, []) != []}
       <ul id="message_threads" class="flex divide-hair divide-secondary flex-col">
