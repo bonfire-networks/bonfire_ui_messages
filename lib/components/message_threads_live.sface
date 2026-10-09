@@ -19,7 +19,7 @@
           </span>
         </button>
         <form class="w-full min-w-0" phx-change="Bonfire.Messages:search_threads">
-          <label class="border-hair border-secondary input w-full">
+          <label class="border-hair border-divider input w-full">
             <#Icon iconify="ph:magnifying-glass-duotone" class="w-5 h-5 text-muted" />
             <span class="sr-only">{l("Search messages")}</span>
             <input
@@ -35,7 +35,7 @@
               type="button"
               phx-click="Bonfire.Messages:search_threads"
               phx-value-search=""
-              class="btn btn-ghost btn-circle btn-sm text-base-content/40 hover:text-base-content"
+              class="btn btn-ghost btn-circle btn-sm text-subtle hover:text-base-content"
             >
               <#Icon iconify="ph:x-duotone" class="w-4 h-4" />
             </button>
@@ -44,7 +44,7 @@
       </div>
       {!-- Message Tabs --}
       {!-- Inbox, and Hidden for what the "Hide notifications and messages from" switches keep out, offered only to someone who hides something. They replace the relationship tabs (All / Followed only / Other) --}
-      <div class="bg-base-200 border-y-hair border-secondary py-1 px-3 flex items-center gap-3">
+      <div class="bg-base-200 border-y-hair border-divider py-1 px-3 flex items-center gap-3">
         <div role="tablist" class="flex gap-3 flex-1">
           {!-- id and role through `opts`, since a plain link renders only those --}
           <LinkLive
@@ -93,11 +93,11 @@
         id="messages-audiences-panel"
         aria-label={l("Message preferences")}
         style="display: none;"
-        class="p-4 border-b-hair border-secondary"
+        class="p-4 border-b-hair border-divider"
       >
         <StatelessComponent module={maybe_component(Bonfire.UI.Social.HiddenAudiencesLive, @__context__)} />
       </section>
-      {!-- <div role="tablist" class="bg-base-200  border-y-hair border-secondary gap-3 py-1 px-3 flex">
+      {!-- <div role="tablist" class="bg-base-200  border-y-hair border-divider gap-3 py-1 px-3 flex">
         <LinkLive
           to="/messages?tab=all"
           role="tab"
@@ -128,7 +128,7 @@
       </div> --}
     </div>
     {#if e(@threads, :edges, []) != []}
-      <ul id="message_threads" class="flex divide-hair divide-secondary flex-col">
+      <ul id="message_threads" class="flex divide-hair divide-divider flex-col">
         {#for %{activity: activity} <- filter_threads(e(@threads, :edges, []), @search_term)}
           {#case {thread_id(activity),
              permalink(
@@ -297,8 +297,8 @@
       />
     {#else}
       <div class="flex flex-col items-center gap-3 my-12 px-6 text-center">
-        <div class="w-16 h-16 rounded-full bg-base-content/5 flex items-center justify-center mb-2">
-          <#Icon iconify="ph:tray-duotone" class="w-8 h-8 text-base-content/30" />
+        <div class="w-16 h-16 rounded-full bg-fill flex items-center justify-center mb-2">
+          <#Icon iconify="ph:tray-duotone" class="w-8 h-8 text-subtle" />
         </div>
         <h3 class="text-lg font-bold">{l("Welcome to your inbox")}</h3>
         <p class="text-sm text-muted max-w-[260px]">

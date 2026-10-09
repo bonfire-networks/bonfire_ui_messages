@@ -31,8 +31,8 @@
   {!-- Empty state --}
   <div class="flex flex-1 items-center justify-center">
     <div class="text-center px-6">
-      <div class="w-16 h-16 rounded-full bg-base-content/5 flex items-center justify-center mb-4 mx-auto">
-        <#Icon iconify="ph:tray-duotone" class="w-8 h-8 text-base-content/30" />
+      <div class="w-16 h-16 rounded-full bg-fill flex items-center justify-center mb-4 mx-auto">
+        <#Icon iconify="ph:tray-duotone" class="w-8 h-8 text-subtle" />
       </div>
       {#if recipient_names(@recipients, @compose_user)}
         <p class="text-muted text-sm">

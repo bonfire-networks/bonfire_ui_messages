@@ -25,7 +25,7 @@
     {!-- Search input --}
     <div class="pb-2">
       <form phx-change="search_contacts" phx-target={@myself}>
-        <label class="input-sm border-hair border-secondary input w-full">
+        <label class="input-sm border-hair border-divider input w-full">
           <#Icon iconify="ph:magnifying-glass-duotone" class="w-5 h-5 text-muted" />
           <input
             type="search"
@@ -68,14 +68,14 @@
           <div class="px-4 py-2">
             <span class="text-xs uppercase tracking-wide">{section_label}</span>
           </div>
-          <div class="flex flex-col divide-hair divide-secondary">
+          <div class="flex flex-col divide-hair divide-divider">
             {#for user <- users}
               <button
                 phx-click="Bonfire.Messages:toggle_recipient"
                 phx-value-id={id(user)}
                 phx-value-name={e(user, :profile, :name, nil) || e(user, :character, :username, l("someone"))}
                 phx-value-username={e(user, :character, :username, nil)}
-                class="flex items-center gap-3 px-4 py-2.5 w-full hover:bg-base-content/5 transition-colors"
+                class="flex items-center gap-3 px-4 py-2.5 w-full hover:bg-fill transition-colors"
               >
                 <div class="flex-none">
                   <input
