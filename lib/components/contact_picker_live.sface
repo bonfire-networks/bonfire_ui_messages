@@ -10,7 +10,7 @@
         >
           <#Icon iconify="ph:arrow-left" class="w-4 h-4" />
         </button>
-        <h3 class="text-body flex-1">
+        <h3 class="text-base flex-1">
           {l("New message")}
         </h3>
       </div>
