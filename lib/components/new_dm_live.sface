@@ -3,5 +3,5 @@
   class="btn btn-ghost !btn-sm"
   aria-label={l("New message")}
 >
-  <#Icon iconify="tabler:mail-plus" class="w-5 h-5" />
+  <#Icon iconify="tabler:mail-plus" class="size-5" />
 </button>

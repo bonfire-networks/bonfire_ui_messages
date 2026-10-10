@@ -13,14 +13,14 @@
           class="btn btn-primary w-full min-w-0 overflow-hidden"
           aria-label={l("New message")}
         >
-          <#Icon iconify="tabler:mail-plus" class="w-5 h-5 shrink-0" />
+          <#Icon iconify="tabler:mail-plus" class="size-5 shrink-0" />
           <span class="max-w-40 overflow-hidden whitespace-nowrap transition-[max-width,opacity] duration-200 ease-in-out motion-reduce:transition-none group-has-[input:focus]/message-search:max-w-0 group-has-[input:focus]/message-search:opacity-0">
             {l("New Message")}
           </span>
         </button>
         <form class="w-full min-w-0" phx-change="Bonfire.Messages:search_threads">
           <label class="border-hair border-divider input w-full">
-            <#Icon iconify="ph:magnifying-glass-duotone" class="w-5 h-5 text-muted" />
+            <#Icon iconify="ph:magnifying-glass-duotone" class="size-5 text-muted" />
             <span class="sr-only">{l("Search messages")}</span>
             <input
               type="search"
@@ -37,7 +37,7 @@
               phx-value-search=""
               class="btn btn-ghost btn-circle btn-sm text-subtle hover:text-base-content"
             >
-              <#Icon iconify="ph:x-duotone" class="w-4 h-4" />
+              <#Icon iconify="ph:x-duotone" class="size-4" />
             </button>
           </label>
         </form>
@@ -190,16 +190,16 @@
                           src={Media.avatar_url(e(activity, :thread_other_participant, nil))}
                           user_id={id(e(activity, :thread_other_participant, nil))}
                           title={e(activity, :thread_other_participant, :profile, :name, nil)}
-                          wrapper_class="border-0 avatar !flex w-12 h-12"
-                          class="w-12 h-12 rounded-full object-cover"
+                          wrapper_class="border-0 avatar !flex size-12"
+                          class="size-12 rounded-full object-cover"
                           is_remote={!check_is_local?(e(activity, :thread_other_participant, nil), preload_if_needed: false)}
                         />
                       </div>
                     {#match count when count > 1}
                       <!-- Group (2+ participants): colored circle with group icon -->
-                      <div class={"flex-none w-12 h-12 rounded-full flex items-center justify-center #{group_avatar_color(e(activity, :replied, :thread_id, nil))}"}>
+                      <div class={"flex-none size-12 rounded-full flex items-center justify-center #{group_avatar_color(e(activity, :replied, :thread_id, nil))}"}>
                         {!-- <span class="indicator-item badge badge-secondary">{count}</span> --}
-                        <#Icon iconify="ph:users-duotone" class="w-6 h-6 text-white" />
+                        <#Icon iconify="ph:users-duotone" class="size-6 text-white" />
                       </div>
                     {#match _}
                       <!-- Fallback: last sender avatar -->
@@ -208,8 +208,8 @@
                           parent_id={deterministic_dom_id(__MODULE__, tid, "msg_av_sub", @parent_id)}
                           src={Media.avatar_url(e(activity, :subject, nil))}
                           user_id={e(activity, :subject_id, nil)}
-                          wrapper_class="border-0 avatar !flex w-12 h-12"
-                          class="w-12 h-12 rounded-full object-cover"
+                          wrapper_class="border-0 avatar !flex size-12"
+                          class="size-12 rounded-full object-cover"
                           is_remote={!check_is_local?(e(activity, :subject, nil), preload_if_needed: false)}
                         />
                       </div>
@@ -272,7 +272,7 @@
                         :if={unread?}
                         data-id="unread_dot"
                         data-thread-id={tid}
-                        class="flex-none w-2.5 h-2.5 rounded-full bg-primary"
+                        class="flex-none size-2.5 rounded-full bg-primary"
                       />
                     </div>
                   </div>
@@ -297,8 +297,8 @@
       />
     {#else}
       <div class="flex flex-col items-center gap-3 my-12 px-6 text-center">
-        <div class="w-16 h-16 rounded-full bg-fill flex items-center justify-center mb-2">
-          <#Icon iconify="ph:tray-duotone" class="w-8 h-8 text-subtle" />
+        <div class="size-16 rounded-full bg-fill flex items-center justify-center mb-2">
+          <#Icon iconify="ph:tray-duotone" class="size-8 text-subtle" />
         </div>
         <h3 class="type-heading">{l("Welcome to your inbox")}</h3>
         <p class="text-sm text-muted max-w-[260px]">
@@ -308,7 +308,7 @@
           phx-click="Bonfire.Messages:toggle_contact_picker"
           class="gap-2 mt-3 btn btn-sm btn-soft btn-primary"
         >
-          <#Icon iconify="ph:tray-duotone" class="w-4 h-4" />
+          <#Icon iconify="ph:tray-duotone" class="size-4" />
           {l("Send a message")}...
         </button>
       </div>
