@@ -1,9 +1,9 @@
 <main class="h-full flex flex-1 w-full overflow-hidden">
+  {!-- the open thread was highlighted in the list, and only `/messages/:id` set it; may come back with that route, passing `thread_id={@thread_id}` to MessageThreadsLive --}
   <Bonfire.UI.Messages.MessageThreadsLive
     showing_within={:messages}
     context={current_user_id(@__context__)}
     threads={@threads}
-    thread_id={@thread_id}
     filter_tab={@filter_tab}
     search_term={@search_term}
     composing_new={e(@composing_new, false)}

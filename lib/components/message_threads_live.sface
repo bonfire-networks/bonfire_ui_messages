@@ -143,8 +143,9 @@
                 data-href={thread_permalink}
                 phx-hook="Bonfire.UI.Common.PreviewContentLive#PreviewActivity"
                 class={[
-                  "bg-base-100 cursor-pointer previewable_activity",
-                  "message-active": @thread_id == tid
+                  "bg-base-100 cursor-pointer previewable_activity"
+                  # the open thread was highlighted, and only `/messages/:id` set it; may come back with that route
+                  # "message-active": @thread_id == tid
                 ]}
               >
                 <Bonfire.UI.Common.OpenPreviewLive

@@ -53,7 +53,8 @@ defmodule Bonfire.UI.Messages.MessagesLive do
         page: "messages",
         no_index: true,
         feed_id: feed_id,
-        thread_id: nil,
+        # the open thread was highlighted in the list, and only `/messages/:id` set it; may come back with that route
+        # thread_id: nil,
         thread_mode: maybe_to_atom(e(params, "mode", nil)),
         feedback_title: l("No messages"),
         feedback_message: l("Select a thread or start a new one..."),
@@ -106,9 +107,11 @@ defmodule Bonfire.UI.Messages.MessagesLive do
           # Found existing thread - redirect to it
           thread_id = e(activity, :replied, :thread_id, nil) || id(e(activity, :object, nil))
 
-          {:noreply,
-           socket
-           |> push_patch(to: "/messages/#{thread_id}")}
+          # a thread is read in its discussion, another LiveView, so not a push_patch
+          # {:noreply,
+          #  socket
+          #  |> push_patch(to: "/messages/#{thread_id}")}
+          {:noreply, redirect_to(socket, "/discussion/#{thread_id}")}
 
         _ ->
           # No existing thread - open composer via SmartInput
@@ -134,25 +137,26 @@ defmodule Bonfire.UI.Messages.MessagesLive do
     end
   end
 
-  def handle_params(%{"id" => id} = params, url, socket) do
-    if not is_uid?(id) do
-      # Strip leading @ since /messages/@:username route may match :id first
-      username = String.trim_leading(id, "@")
-      handle_params(%{"username" => username}, url, socket)
-    else
-      current_user = current_user_required!(socket)
-      filter_tab = determine_filter_tab(params, current_user)
-
-      {:noreply,
-       socket
-       |> assign(
-         thread_id: id,
-         filter_tab: filter_tab,
-         page: "messages",
-         page_header_aside: []
-       )}
-    end
-  end
+  # no route gives an `id` since a message is read in its discussion; may come back with the `/messages/:id` routes
+  # def handle_params(%{"id" => id} = params, url, socket) do
+  #   if not is_uid?(id) do
+  #     # Strip leading @ since /messages/@:username route may match :id first
+  #     username = String.trim_leading(id, "@")
+  #     handle_params(%{"username" => username}, url, socket)
+  #   else
+  #     current_user = current_user_required!(socket)
+  #     filter_tab = determine_filter_tab(params, current_user)
+  #
+  #     {:noreply,
+  #      socket
+  #      |> assign(
+  #        thread_id: id,
+  #        filter_tab: filter_tab,
+  #        page: "messages",
+  #        page_header_aside: []
+  #      )}
+  #   end
+  # end
 
   # show all my threads
   def handle_params(params, _url, socket) do
@@ -170,8 +174,9 @@ defmodule Bonfire.UI.Messages.MessagesLive do
         threads: threads,
         page_title: l("Direct Messages"),
         filter_tab: filter_tab,
-        composing_new: false,
-        thread_id: nil
+        composing_new: false
+        # the open thread was highlighted in the list, and only `/messages/:id` set it; may come back with that route
+        # thread_id: nil
       )
     }
   end

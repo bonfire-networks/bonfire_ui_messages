@@ -3,10 +3,7 @@
   widget_title={e(@widget_title, "Messages")}
 >
   <:action>
-    <LinkLive
-      class="text-xs normal-case btn btn-sm btn-outline"
-      to={path(Bonfire.Data.Social.Message)}
-    >
+    <LinkLive class="text-xs normal-case btn btn-sm btn-outline" to={path(:messages)}>
       {l("View more")}
     </LinkLive>
   </:action>

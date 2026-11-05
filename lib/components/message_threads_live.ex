@@ -4,7 +4,9 @@ defmodule Bonfire.UI.Messages.MessageThreadsLive do
 
   prop parent_id, :string, default: nil
   prop threads, :any, default: nil
-  prop thread_id, :string, default: nil
+
+  # the open thread was highlighted in the list, and only `/messages/:id` set it; may come back with that route
+  # prop thread_id, :string, default: nil
   prop context, :any, default: nil
   prop showing_within, :atom, default: nil
   prop filter_tab, :string, default: "inbox"
