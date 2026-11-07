@@ -1,6 +1,6 @@
 defmodule Bonfire.UI.Messages.MessagesBlockKeywordsTest do
   @moduledoc """
-  A direct message matching one of its recipient's filtered keywords shows to them as "[Content blocked by filters]", in the conversation and in the list of conversations. Its sender, who has no such keyword, sees the text.
+  A direct message matching one of the keywords its recipient hides completely is gone from the conversation for them, as if deleted, and shows as "[Content blocked by filters]" in the list of conversations, which prints the text itself. Its sender, who has no such keyword, sees the text.
   """
   use Bonfire.UI.Messages.ConnCase, async: false
   use Bonfire.Common.Utils
@@ -29,7 +29,7 @@ defmodule Bonfire.UI.Messages.MessagesBlockKeywordsTest do
      recipient: conn(user: recipient, account: recipient_account)}
   end
 
-  test "in the conversation, a matching message shows the placeholder to its recipient", %{
+  test "in the conversation, a matching message is gone for its recipient, as if deleted", %{
     op: op,
     sender: sender,
     recipient: recipient
@@ -39,11 +39,14 @@ defmodule Bonfire.UI.Messages.MessagesBlockKeywordsTest do
     |> wait_async()
     |> assert_has("[data-id=object_body]", text: "Cheap viagra for you")
 
-    recipient
-    |> visit("/discussion/#{op.id}")
-    |> wait_async()
-    |> assert_has("#thread_main_object", text: @placeholder)
-    |> refute_has("body", text: "Cheap viagra for you")
+    session =
+      recipient
+      |> visit("/discussion/#{op.id}")
+      |> wait_async()
+      |> assert_has("#thread_main_object", text: "may have been deleted")
+
+    # (a LiveView page has no `body` element to scope to: an assertion on one finds nothing)
+    refute Phoenix.LiveViewTest.render(session.view) =~ "Cheap viagra for you"
   end
 
   test "in the list of conversations, a matching message's preview shows the placeholder to its recipient",
@@ -57,6 +60,6 @@ defmodule Bonfire.UI.Messages.MessagesBlockKeywordsTest do
     |> visit("/messages")
     |> wait_async()
     |> assert_has("#message_threads", text: @placeholder)
-    |> refute_has("body", text: "Cheap viagra for you")
+    |> refute_has("#message_threads", text: "Cheap viagra for you")
   end
 end
