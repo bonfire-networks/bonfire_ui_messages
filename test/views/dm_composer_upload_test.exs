@@ -30,6 +30,7 @@ defmodule Bonfire.UI.Messages.DmComposerUploadTest do
     {:ok, view, _html} = live(conn, path)
     persistent = find_live_child(view, "persistent")
     assert persistent, "sticky PersistentLive child not found"
+
     # the page opens the composer by messaging the sticky child: rendering both makes sure it was handled
     render(view)
     render(persistent)
