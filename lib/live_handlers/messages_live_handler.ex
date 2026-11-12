@@ -389,7 +389,7 @@ defmodule Bonfire.Messages.LiveHandler do
 
         {:noreply,
          socket
-         |> Bonfire.UI.Common.SmartInput.LiveHandler.reset_input()
+         |> Bonfire.UI.Common.SmartInput.LiveHandler.refused()
          |> assign_flash(:error, l("Could not send the message"))}
     end
   end
