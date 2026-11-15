@@ -32,7 +32,7 @@ defmodule Bonfire.UI.Messages.MessageThreadsLive do
 
     Enum.filter(edges, fn %{activity: activity} ->
       names = e(activity, :thread_participants_names, "") || ""
-      thread_name = e(activity, :replied, :thread, :named, :name, "") || ""
+      thread_name = e(activity, :replied, :thread_named, :name, "") || ""
       subject_name = e(activity, :subject, :profile, :name, "") || ""
 
       preview =

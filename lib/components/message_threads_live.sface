@@ -152,7 +152,7 @@
                   href={thread_permalink}
                   parent_id={"thread-#{tid}"}
                   open_btn_text=""
-                  title_text={e(activity, :replied, :thread, :named, :name, nil) ||
+                  title_text={e(activity, :replied, :thread_named, :name, nil) ||
                     e(activity, :thread_participants_names, nil) ||
                     l("Conversation")}
                   modal_assigns={Bonfire.UI.Social.ActivityLive.thread_preview_modal_assigns(
@@ -228,7 +228,7 @@
                           "font-medium text-base-content": !unread?
                         ]}
                       >
-                        {#case e(activity, :replied, :thread, :named, :name, nil)}
+                        {#case e(activity, :replied, :thread_named, :name, nil)}
                           {#match nil}
                             {e(activity, :thread_participants_names, nil) ||
                               e(activity, :subject, :profile, :name, nil) ||

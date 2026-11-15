@@ -310,7 +310,7 @@ defmodule Bonfire.Messages.LiveHandler do
         user,
         [latest_in_threads: true, limit: default_limit] ++ List.wrap(opts)
       )
-      |> repo().maybe_preload(activity: [replied: [thread: :named]])
+      |> repo().maybe_preload(activity: [replied: :thread_named])
       |> enrich_threads_with_participants(current_user)
     end
   end
