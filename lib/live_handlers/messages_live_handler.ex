@@ -375,10 +375,19 @@ defmodule Bonfire.Messages.LiveHandler do
   def send_message(params, socket) do
     attrs =
       params
+      |> Map.drop(["upload_metadata"])
       |> debug("attrs")
       |> input_to_atoms()
       # workaround for input_to_atoms discarding non-atom circle ids
       |> Map.put(:to_circles, params["to_circles"])
+
+    # the files uploaded in the composer, attached to the message, each one the text places as `upload:<ref>` getting its stored URL there
+    {attrs, uploaded_media} =
+      live_upload_files_into(attrs, current_user(socket), params["upload_metadata"], socket,
+        body_path: [:post, :post_content, :html_body]
+      )
+
+    attrs = Map.put(attrs, :uploaded_media, uploaded_media)
 
     with {:ok, sent} <-
            Messages.send([context: assigns(socket)[:__context__] || current_user(socket)], attrs) do

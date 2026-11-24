@@ -1,6 +1,6 @@
 defmodule Bonfire.UI.Messages.DmComposerUploadTest do
   @moduledoc """
-  The composer's upload button in each state a direct message puts it in. A message can't carry attachments, so the button is hidden while the composer writes one, and comes back, working, when it writes a post again.
+  The composer's upload button in each state a direct message puts it in. A message carries the files uploaded with it, as a post does (attached, or placed in its text), so the button works while the composer writes one, and still works when it writes a post again.
 
   The composer lives in the sticky `PersistentLive` child LV, so interactions go through `find_live_child(view, "persistent")` rather than PhoenixTest.
   """
@@ -75,16 +75,50 @@ defmodule Bonfire.UI.Messages.DmComposerUploadTest do
     upload_image!(persistent, image)
   end
 
-  test "a new direct message has no upload button", %{conn: conn, recipient: recipient} do
+  test "a new direct message has a working upload button", %{
+    conn: conn,
+    recipient: recipient,
+    image: image
+  } do
     {_view, persistent} = dm_composer(conn, recipient)
 
-    refute has_element?(persistent, @upload_input)
+    assert has_element?(persistent, @upload_input)
+    upload_image!(persistent, image)
   end
 
-  test "replying in a direct message has no upload button", %{
+  # the composer writes `upload:<ref>` for a file it hasn't uploaded yet: sending stores the file, attaches it, and puts its URL there
+  test "a direct message sent with an image placed in its text has it attached, at its stored URL",
+       %{conn: conn, me: me, recipient: recipient, image: image} do
+    {_view, persistent} = dm_composer(conn, recipient)
+    upload_image!(persistent, image)
+
+    [_, ref] = Regex.run(~r/upload_metadata\[([^\]]+)\]/, render(persistent))
+
+    persistent
+    |> element("#smart_input_form")
+    |> render_submit(%{
+      "create_object_type" => "message",
+      "to_circles" => [recipient.id],
+      "post" => %{"post_content" => %{"html_body" => "Intro\n\n![](upload:#{ref})\n\nmore"}}
+    })
+
+    assert %{edges: [message | _]} = Messages.list(me, id(recipient), limit: 1)
+
+    message =
+      (e(message, :activity, :object, nil) || e(message, :object, nil) || message)
+      |> Bonfire.Common.Repo.maybe_preload([:post_content, files: [:media]], force: true)
+
+    assert [%{media: media}] = message.files
+    body = e(message, :post_content, :html_body, nil)
+    refute body =~ "upload:"
+    assert Bonfire.Files.InlineMedia.inline_ids(body, [media]) == [id(media)]
+  end
+
+  test "replying in a direct message has a working upload button", %{
     conn: conn,
     me: me,
-    recipient: recipient
+    recipient: recipient,
+    image: image
   } do
     {:ok, op} = Messages.send(recipient, %{post_content: %{html_body: "a private hello"}}, me)
 
@@ -93,7 +127,8 @@ defmodule Bonfire.UI.Messages.DmComposerUploadTest do
     render(persistent)
 
     assert has_element?(persistent, @message_type), "control: the composer writes a message"
-    refute has_element?(persistent, @upload_input)
+    assert has_element?(persistent, @upload_input)
+    upload_image!(persistent, image)
   end
 
   # Mentaal: "I cannot add images to posts anymore. Even not to new posts: the button doesn't work"
