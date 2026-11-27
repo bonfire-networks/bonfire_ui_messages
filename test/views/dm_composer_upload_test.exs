@@ -157,4 +157,68 @@ defmodule Bonfire.UI.Messages.DmComposerUploadTest do
     assert has_element?(persistent, @upload_input)
     upload_image!(persistent, image)
   end
+
+  describe "a file that fails to upload" do
+    @gps_fixtures Path.expand("../../../bonfire_files/test/fixtures/gps", __DIR__)
+
+    defp send_with(persistent, recipient, fixture, type, text) do
+      name = Path.basename(fixture)
+
+      persistent
+      |> file_input("#smart_input_form", :files, [
+        %{name: name, content: File.read!(Path.join(@gps_fixtures, fixture)), type: type}
+      ])
+      |> render_upload(name)
+
+      persistent
+      |> element("#smart_input_form")
+      |> render_submit(%{
+        "create_object_type" => "message",
+        "to_circles" => [recipient.id],
+        "post" => %{"post_content" => %{"html_body" => text}}
+      })
+    end
+
+    defp sent_count(me, recipient),
+      do: length(Messages.list(me, id(recipient), limit: 10).edges)
+
+    test "a clean image is sent with the message (control)", %{
+      conn: conn,
+      me: me,
+      recipient: recipient
+    } do
+      {_view, persistent} = dm_composer(conn, recipient)
+
+      send_with(persistent, recipient, "clean.jpg", "image/jpeg", "a message with a clean image")
+
+      assert sent_count(me, recipient) == 1
+    end
+
+    test "a file that carries a location is refused: the error names it, nothing is sent, the text and the file stay",
+         %{conn: conn, me: me, recipient: recipient} do
+      {_view, persistent} = dm_composer(conn, recipient)
+
+      send_with(
+        persistent,
+        recipient,
+        "gps.pdf",
+        "application/pdf",
+        "a message with a located file"
+      )
+
+      # the flash is shown by the persistent LiveView the composer lives in
+      flash =
+        persistent
+        |> render()
+        |> Floki.parse_document!()
+        |> Floki.find("[data-id=flash]")
+        |> Floki.text()
+
+      assert flash =~ "gps.pdf"
+      assert flash =~ "location data"
+      assert sent_count(me, recipient) == 0
+      refute_push_event(persistent, "smart_input:reset", %{})
+      assert has_element?(persistent, ".uploads_preview")
+    end
+  end
 end

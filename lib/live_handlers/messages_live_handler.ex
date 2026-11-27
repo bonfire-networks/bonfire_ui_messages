@@ -382,24 +382,34 @@ defmodule Bonfire.Messages.LiveHandler do
       |> Map.put(:to_circles, params["to_circles"])
 
     # the files uploaded in the composer, attached to the message, each one the text places as `upload:<ref>` getting its stored URL there
-    {attrs, uploaded_media} =
-      live_upload_files_into(attrs, current_user(socket), params["upload_metadata"], socket,
-        body_path: [:post, :post_content, :html_body]
-      )
-
-    attrs = Map.put(attrs, :uploaded_media, uploaded_media)
-
-    with {:ok, sent} <-
-           Messages.send([context: assigns(socket)[:__context__] || current_user(socket)], attrs) do
-      message_sent(sent, attrs, socket)
-    else
-      e ->
-        debug(message_error: e)
-
+    case live_upload_files_into(attrs, current_user(socket), params["upload_metadata"], socket,
+           body_path: [:post, :post_content, :html_body]
+         ) do
+      {:error, message} ->
+        # a file failed to upload: nothing is sent, the text and the files stay
         {:noreply,
          socket
          |> Bonfire.UI.Common.SmartInput.LiveHandler.refused()
-         |> assign_flash(:error, l("Could not send the message"))}
+         |> assign_error(l("Could not send the message") <> ": " <> message)}
+
+      {attrs, uploaded_media} ->
+        attrs = Map.put(attrs, :uploaded_media, uploaded_media)
+
+        with {:ok, sent} <-
+               Messages.send(
+                 [context: assigns(socket)[:__context__] || current_user(socket)],
+                 attrs
+               ) do
+          message_sent(sent, attrs, socket)
+        else
+          e ->
+            debug(message_error: e)
+
+            {:noreply,
+             socket
+             |> Bonfire.UI.Common.SmartInput.LiveHandler.refused()
+             |> assign_flash(:error, l("Could not send the message"))}
+        end
     end
   end
 
